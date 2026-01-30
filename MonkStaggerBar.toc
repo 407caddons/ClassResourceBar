@@ -1,0 +1,29 @@
+## Interface: 120000
+## Title: Class resource bar
+## Notes: Resource bar for all classes
+## Author: 407c
+## Version: 1.3.1
+## X-Curse-Project-ID: 1448507
+## SavedVariables: MonkStaggerBarDB
+## Category-enUS: Combat
+## Category-deDE: Kampf
+## Category-esES: Combate
+## Category-esMX: Combate
+## Category-frFR: Combat
+## Category-itIT: Combattimento
+## Category-koKR: 전투
+## Category-ptBR: Combate
+## Category-ruRU: Бой
+## Category-zhCN: 战斗
+## Category-zhTW: 戰鬥
+## IconTexture: Interface/AddOns/MonkStaggerBar/MonkStaggerBarIcon.png
+
+Core.lua
+MonkStaggerBarConfig.lua
+MonkStaggerBar.lua
+DeathKnight.lua
+DemonHunter.lua
+Druid.lua
+Evoker.lua
+Warrior.lua
+Paladin.lua
