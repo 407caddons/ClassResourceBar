@@ -459,6 +459,59 @@ function addon.OpenConfig()
         return page
     end
 
+    local function CreateHunterPage()
+        local page = CreateFrame("Frame", nil, contentFrame)
+        page:SetAllPoints(true)
+        page:Hide()
+        
+        CreateColorPicker(page, "MSBColorHunterFocus", "Focus Bar Color", 
+            function() 
+                local c = MonkStaggerBarDB.colors.hunterFocus or {r=1, g=0.5, b=0.25}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.hunterFocus = {r=r, g=g, b=b}
+                if addon.UpdateFocus then addon.UpdateFocus() end
+            end, -20)
+            
+        return page
+    end
+
+    local function CreateWarlockPage()
+        local page = CreateFrame("Frame", nil, contentFrame)
+        page:SetAllPoints(true)
+        page:Hide()
+        
+        CreateSlider(page, "MSBWarlockManaRatio", "Mana Bar Height %", 0, 100, 5, 
+            function() return (MonkStaggerBarDB.warlockManaRatio or 0.2) * 100 end,
+            function(val) 
+                MonkStaggerBarDB.warlockManaRatio = val / 100
+                if addon.OnLayoutUpdate then addon.OnLayoutUpdate() end
+            end, -20)
+            
+        CreateColorPicker(page, "MSBColorWarlockShards", "Soul Shard Color", 
+            function() 
+                local c = MonkStaggerBarDB.colors.warlockShards or {r=0.58, g=0.51, b=0.79}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.warlockShards = {r=r, g=g, b=b}
+                if addon.UpdateWarlockResources then addon.UpdateWarlockResources() end
+            end, -70)
+            
+        CreateColorPicker(page, "MSBColorWarlockMana", "Mana Bar Color", 
+            function() 
+                local c = MonkStaggerBarDB.colors.warlockMana or {r=0, g=0, b=1}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.warlockMana = {r=r, g=g, b=b}
+                if addon.UpdateWarlockResources then addon.UpdateWarlockResources() end
+            end, -110)
+            
+        return page
+    end
+
     pages["General"] = CreateGeneralPage()
     pages["Monk"] = CreateMonkPage()
     pages["Death Knight"] = CreateDKPage()
@@ -467,6 +520,8 @@ function addon.OpenConfig()
     pages["Evoker"] = CreateEvokerPage()
     pages["Warrior"] = CreateWarriorPage()
     pages["Paladin"] = CreatePaladinPage()
+    pages["Hunter"] = CreateHunterPage()
+    pages["Warlock"] = CreateWarlockPage()
     
     -- Nav Buttons
     local function SwitchTo(name)
@@ -493,6 +548,8 @@ function addon.OpenConfig()
     CreateNavButton("Evoker", -160)
     CreateNavButton("Warrior", -190)
     CreateNavButton("Paladin", -220)
+    CreateNavButton("Hunter", -250)
+    CreateNavButton("Warlock", -280)
     
     SwitchTo("General")
 end

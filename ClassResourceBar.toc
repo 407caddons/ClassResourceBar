@@ -27,3 +27,5 @@ Druid.lua
 Evoker.lua
 Warrior.lua
 Paladin.lua
+Hunter.lua
+Warlock.lua
