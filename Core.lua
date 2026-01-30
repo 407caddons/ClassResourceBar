@@ -150,7 +150,7 @@ function addon.CreateMinimapButton()
     button:SetFrameLevel(Minimap:GetFrameLevel() + 5)
     button:SetSize(32, 32)
     -- Using the unified icon now
-    button:SetNormalTexture("Interface\\AddOns\\MonkStaggerBar\\MonkStaggerBarIcon.png")
+    button:SetNormalTexture("Interface\\AddOns\\ClassResourceBar\\MonkStaggerBarIcon.png")
     button:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
     
     local overlay = button:CreateTexture(nil, "OVERLAY")

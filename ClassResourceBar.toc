@@ -16,7 +16,7 @@
 ## Category-ruRU: Бой
 ## Category-zhCN: 战斗
 ## Category-zhTW: 戰鬥
-## IconTexture: Interface/AddOns/MonkStaggerBar/MonkStaggerBarIcon.png
+## IconTexture: Interface/AddOns/ClassResourceBar/MonkStaggerBarIcon.png
 
 Core.lua
 MonkStaggerBarConfig.lua
