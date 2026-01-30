@@ -25,10 +25,14 @@ local defaults = {
         mana = {r=0, g=0, b=1},
         holyPower = {r=1, g=0.9, b=0},
         paladinMana = {r=0, g=0, b=1},
+        hunterFocus = {r=1, g=0.5, b=0.25}, -- Orange
+        warlockShards = {r=0.58, g=0.51, b=0.79}, -- Purple
+        warlockMana = {r=0, g=0, b=1}, -- Blue
     },
     runeHeightRatio = 0.2,
     druidBottomRatio = 0.2,
     paladinManaRatio = 0.2,
+    warlockManaRatio = 0.2,
 }
 
 -- Initialize Core
