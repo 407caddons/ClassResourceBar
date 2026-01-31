@@ -10,6 +10,10 @@ local staggerBar, energyBar
 
 local COLOR_ENERGY_DEFAULT = {r=1, g=1, b=0}
 
+-- Cache for stagger values to handle "secret value" errors
+addon.lastStagger = 0
+addon.lastMaxHealth = 1
+
 function addon.InitializeModule()
     local frame = addon.Frame
     
@@ -153,8 +157,20 @@ function addon.UpdateStagger()
     if not staggerBar or not staggerBar:IsShown() then return end
     
     local stagger = UnitStagger("player") or 0
-    local maxHealth = UnitHealthMax("player")
-    local percent = stagger / maxHealth
+    local maxHealth = UnitHealthMax("player") or 1
+    
+    -- Update cache only if we get valid numbers
+    if type(stagger) == "number" then
+        addon.lastStagger = stagger
+    end
+    if type(maxHealth) == "number" and maxHealth > 0 then
+        addon.lastMaxHealth = maxHealth
+    end
+    
+    -- Fallback to cached values for calculation
+    local s = addon.lastStagger
+    local m = addon.lastMaxHealth
+    local percent = s / m
 
     staggerBar:SetMinMaxValues(0, maxHealth)
     staggerBar:SetValue(stagger)
