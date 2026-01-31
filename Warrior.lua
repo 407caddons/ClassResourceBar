@@ -13,7 +13,8 @@ function addon.InitializeModule()
     -- Setup Rage Bar
     rageBar = CreateFrame("StatusBar", nil, frame)
     rageBar:SetAllPoints(frame)
-    rageBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    rageBar:SetStatusBarTexture(texture)
     
     local c = MonkStaggerBarDB.colors.rage or RAGE_COLOR
     rageBar:SetStatusBarColor(c.r, c.g, c.b)
@@ -76,4 +77,10 @@ end
 -- Layout Update
 function addon.OnLayoutUpdate()
    -- Nothing special for now as it fills the frame.
+end
+
+function addon.OnTextureUpdate()
+    if not rageBar then return end
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    rageBar:SetStatusBarTexture(texture)
 end

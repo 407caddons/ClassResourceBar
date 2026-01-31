@@ -70,7 +70,8 @@ end
 
 function CreateResourceBar(name, parent)
     local bar = CreateFrame("StatusBar", name, parent)
-    bar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    bar:SetStatusBarTexture(texture)
     bar:SetMinMaxValues(0, 100)
     
     -- Background
@@ -219,4 +220,12 @@ end
 -- Hook Layout Update from Core to resizing
 function addon.OnLayoutUpdate()
     addon.UpdateDruidLayout()
+end
+
+function addon.OnTextureUpdate()
+    if not rageBar or not energyBar or not manaBar then return end
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    rageBar:SetStatusBarTexture(texture)
+    energyBar:SetStatusBarTexture(texture)
+    manaBar:SetStatusBarTexture(texture)
 end

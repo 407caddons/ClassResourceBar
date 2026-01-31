@@ -17,7 +17,8 @@ function addon.InitializeModule()
     
     -- Setup Mana Bar (Bottom 20%)
     manaBar = CreateFrame("StatusBar", nil, frame)
-    manaBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    manaBar:SetStatusBarTexture(texture)
     
     local cMana = MonkStaggerBarDB.colors.paladinMana or MANA_COLOR
     manaBar:SetStatusBarColor(cMana.r, cMana.g, cMana.b)
@@ -144,4 +145,11 @@ function addon.OnLayoutUpdate()
         hpBlocks[i]:SetSize(blockWidth - 2, hpHeight)
         hpBlocks[i]:SetPoint("TOPLEFT", frame, "TOPLEFT", (i-1) * blockWidth + 1, 0)
     end
+end
+
+function addon.OnTextureUpdate()
+    if not manaBar then return end
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    manaBar:SetStatusBarTexture(texture)
+    -- Holy Power blocks use solid colors, so no texture update needed unless they are converted to StatusBars
 end

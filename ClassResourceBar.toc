@@ -2,7 +2,7 @@
 ## Title: Class resource bar
 ## Notes: Resource bar for all classes
 ## Author: 407c
-## Version: 1.4.1
+## Version: 1.5.0
 ## X-Curse-Project-ID: 1448507
 ## SavedVariables: MonkStaggerBarDB
 ## Category-enUS: Combat
@@ -20,7 +20,7 @@
 
 Core.lua
 MonkStaggerBarConfig.lua
-MonkStaggerBar.lua
+Monk.lua
 DeathKnight.lua
 DemonHunter.lua
 Druid.lua

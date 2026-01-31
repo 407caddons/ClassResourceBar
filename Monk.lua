@@ -19,7 +19,8 @@ function addon.InitializeModule()
     
     -- Create Stagger Bar
     staggerBar = CreateFrame("StatusBar", nil, frame)
-    staggerBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    staggerBar:SetStatusBarTexture(texture)
     staggerBar:GetStatusBarTexture():SetHorizTile(false)
     staggerBar:SetMinMaxValues(0, 100)
     staggerBar:SetValue(0)
@@ -34,7 +35,7 @@ function addon.InitializeModule()
     
     -- Create Energy Bar
     energyBar = CreateFrame("StatusBar", nil, frame)
-    energyBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+    energyBar:SetStatusBarTexture(texture)
     energyBar:SetMinMaxValues(0, 100)
     energyBar:SetValue(0)
     
@@ -160,10 +161,10 @@ function addon.UpdateStagger()
     local maxHealth = UnitHealthMax("player") or 1
     
     -- Update cache only if we get valid numbers
-    if type(stagger) == "number" then
+    if not issecretvalue(stagger) then
         addon.lastStagger = stagger
     end
-    if type(maxHealth) == "number" and maxHealth > 0 then
+    if not issecretvalue(maxHealth) and maxHealth > 0 then
         addon.lastMaxHealth = maxHealth
     end
     
@@ -196,4 +197,11 @@ end
 
 function addon.OnLayoutUpdate()
     addon.UpdateMonkLayout()
+end
+
+function addon.OnTextureUpdate()
+    if not staggerBar or not energyBar then return end
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    staggerBar:SetStatusBarTexture(texture)
+    energyBar:SetStatusBarTexture(texture)
 end

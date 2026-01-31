@@ -13,10 +13,11 @@ function addon.InitializeModule()
     
     -- Setup Runic Power Bar (Top 80%)
     runicPowerBar = CreateFrame("StatusBar", nil, frame)
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
     runicPowerBar:SetPoint("TOPLEFT", frame, "TOPLEFT")
     runicPowerBar:SetPoint("TOPRIGHT", frame, "TOPRIGHT")
     -- Height set in Layout Update
-    runicPowerBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+    runicPowerBar:SetStatusBarTexture(texture)
     runicPowerBar:SetStatusBarColor(RP_COLOR.r, RP_COLOR.g, RP_COLOR.b)
     runicPowerBar:SetMinMaxValues(0, UnitPowerMax("player", Enum.PowerType.RunicPower))
     runicPowerBar:SetValue(UnitPower("player", Enum.PowerType.RunicPower))
@@ -35,7 +36,7 @@ function addon.InitializeModule()
     for i = 1, 6 do
         local rBar = CreateFrame("StatusBar", nil, frame)
         -- Positioning set in Layout Update
-        rBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+        rBar:SetStatusBarTexture(texture)
         rBar:SetStatusBarColor(0.69, 0.38, 1) 
         
         -- Rune BG
@@ -134,6 +135,17 @@ function addon.UpdateRunes()
                 rBar:SetValue(GetTime())
                 rBar:SetStatusBarColor(cRecharge.r, cRecharge.g, cRecharge.b)
             end
+        end
+    end
+end
+
+function addon.OnTextureUpdate()
+    if not runicPowerBar then return end
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    runicPowerBar:SetStatusBarTexture(texture)
+    for i = 1, 6 do
+        if runeBars[i] then
+            runeBars[i]:SetStatusBarTexture(texture)
         end
     end
 end

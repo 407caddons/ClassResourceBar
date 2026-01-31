@@ -18,7 +18,8 @@ function addon.InitializeModule()
     
     -- Setup Mana Bar (Bottom 20%)
     manaBar = CreateFrame("StatusBar", nil, frame)
-    manaBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    manaBar:SetStatusBarTexture(texture)
     
     local cMana = MonkStaggerBarDB.colors.warlockMana or MANA_COLOR
     manaBar:SetStatusBarColor(cMana.r, cMana.g, cMana.b)
@@ -35,7 +36,7 @@ function addon.InitializeModule()
     -- Setup Soul Shard Blocks (Top 80%)
     for i = 1, 5 do
         local block = CreateFrame("StatusBar", nil, frame) -- Using StatusBar for Destruction bits
-        block:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+        block:SetStatusBarTexture(texture)
         
         block.bg = block:CreateTexture(nil, "BACKGROUND")
         block.bg:SetAllPoints(true)
@@ -162,6 +163,17 @@ function addon.OnLayoutUpdate()
             shardBlocks[i]:SetPoint("TOPLEFT", frame, "TOPLEFT", (i-1) * (shardWidth + gap), 0)
         else
             shardBlocks[i]:Hide()
+        end
+    end
+end
+
+function addon.OnTextureUpdate()
+    if not manaBar then return end
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    manaBar:SetStatusBarTexture(texture)
+    for i = 1, 5 do
+        if shardBlocks[i] then
+            shardBlocks[i]:SetStatusBarTexture(texture)
         end
     end
 end

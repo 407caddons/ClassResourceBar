@@ -12,7 +12,8 @@ function addon.InitializeModule()
     
     -- Setup Focus Bar
     focusBar = CreateFrame("StatusBar", nil, frame)
-    focusBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    focusBar:SetStatusBarTexture(texture)
     
     local c = MonkStaggerBarDB.colors.hunterFocus or FOCUS_COLOR
     focusBar:SetStatusBarColor(c.r, c.g, c.b)
@@ -68,4 +69,10 @@ function addon.OnLayoutUpdate()
     
     focusBar:SetSize(w, h)
     focusBar:SetPoint("TOPLEFT", frame, "TOPLEFT")
+end
+
+function addon.OnTextureUpdate()
+    if not focusBar then return end
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    focusBar:SetStatusBarTexture(texture)
 end
