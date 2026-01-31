@@ -13,7 +13,8 @@ function addon.InitializeModule()
     -- Setup Fury Bar (Fills text)
     furyBar = CreateFrame("StatusBar", nil, frame)
     furyBar:SetAllPoints(frame)
-    furyBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    furyBar:SetStatusBarTexture(texture)
     
     local c = MonkStaggerBarDB.colors.fury or FURY_COLOR
     furyBar:SetStatusBarColor(c.r, c.g, c.b)
@@ -85,4 +86,10 @@ end
 -- Layout Update
 function addon.OnLayoutUpdate()
    -- Nothing special for now as it fills the frame.
+end
+
+function addon.OnTextureUpdate()
+    if not furyBar then return end
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    furyBar:SetStatusBarTexture(texture)
 end

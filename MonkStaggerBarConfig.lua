@@ -135,6 +135,44 @@ local function CreateColorPicker(parent, name, label, getFunc, setFunc, yOffset)
     end)
 end
 
+-- Helper: Create Dropdown (Simple version using UIDropDownMenu)
+local function CreateDropdown(parent, name, label, items, getFunc, setFunc, yOffset)
+    local labelText = parent:CreateFontString(nil, "OVERLAY", "GameFontNormal")
+    labelText:SetPoint("TOPLEFT", parent, "TOPLEFT", 20, yOffset)
+    labelText:SetText(label)
+
+    local dropdown = CreateFrame("Frame", name, parent, "UIDropDownMenuTemplate")
+    dropdown:SetPoint("TOPLEFT", labelText, "BOTTOMLEFT", -15, -5)
+    
+    local function OnClick(self)
+        UIDropDownMenu_SetSelectedValue(dropdown, self.value)
+        setFunc(self.value)
+    end
+
+    local function Initialize(self, level)
+        local info = UIDropDownMenu_CreateInfo()
+        for _, item in ipairs(items) do
+            info.text = item.text
+            info.value = item.value
+            info.func = OnClick
+            info.checked = (item.value == getFunc())
+            UIDropDownMenu_AddButton(info, level)
+        end
+    end
+
+    UIDropDownMenu_Initialize(dropdown, Initialize)
+    UIDropDownMenu_SetSelectedValue(dropdown, getFunc())
+    UIDropDownMenu_SetText(dropdown, "") -- Will be set by selection
+    for _, item in ipairs(items) do
+        if item.value == getFunc() then
+            UIDropDownMenu_SetText(dropdown, item.text)
+            break
+        end
+    end
+    
+    return dropdown
+end
+
 function addon.OpenConfig()
     if configFrame then 
         configFrame:Show()
@@ -223,6 +261,24 @@ function addon.OpenConfig()
                     print("|cff00ff00MSB:|r Frame Locked")
                 end
             end, -220)
+
+        local textureItems = {
+            { text = "Default", value = "Interface\\TargetingFrame\\UI-StatusBar" },
+            { text = "Smooth", value = "Interface\\AddOns\\ClassResourceBar\\MonkStaggerBarIcon.png" }, -- Placeholder for smooth if no specific path, but let's find better ones
+            { text = "Raid", value = "Interface\\RaidFrame\\Raid-Bar-Hp-Fill" },
+            { text = "Flat", value = "Interface\\Buttons\\WHITE8X8" },
+            { text = "Glaze", value = "Interface\\ChatFrame\\ChatFrameBackground" },
+        }
+        
+        -- Override smooth with a more standard "smooth" texture path if possible, or just standard ones
+        textureItems[2].value = "Interface\\Buttons\\UI-Listbox-Highlight" -- A common smooth-ish look
+
+        CreateDropdown(page, "MSBTextureDropdown", "Bar Texture", textureItems,
+            function() return MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar" end,
+            function(v)
+                MonkStaggerBarDB.barTexture = v
+                if addon.UpdateTextures then addon.UpdateTextures() end
+            end, -260)
 
         return page
     end

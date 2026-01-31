@@ -32,7 +32,9 @@ local defaults = {
     runeHeightRatio = 0.2,
     druidBottomRatio = 0.2,
     paladinManaRatio = 0.2,
+    paladinManaRatio = 0.2,
     warlockManaRatio = 0.2,
+    barTexture = "Interface\\TargetingFrame\\UI-StatusBar",
 }
 
 -- Initialize Core
@@ -131,6 +133,13 @@ function addon.UpdateLayout()
     -- Notify Module
     if addon.OnLayoutUpdate then
         addon.OnLayoutUpdate()
+    end
+end
+
+-- Refresh Textures (Called when Texture changes)
+function addon.UpdateTextures()
+    if addon.OnTextureUpdate then
+        addon.OnTextureUpdate()
     end
 end
 
