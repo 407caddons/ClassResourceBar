@@ -161,10 +161,10 @@ function addon.UpdateStagger()
     local maxHealth = UnitHealthMax("player") or 1
     
     -- Update cache only if we get valid numbers
-    if type(stagger) == "number" then
+    if not issecretvalue(stagger) then
         addon.lastStagger = stagger
     end
-    if type(maxHealth) == "number" and maxHealth > 0 then
+    if not issecretvalue(maxHealth) and maxHealth > 0 then
         addon.lastMaxHealth = maxHealth
     end
     
