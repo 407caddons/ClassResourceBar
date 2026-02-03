@@ -29,3 +29,7 @@ Warrior.lua
 Paladin.lua
 Hunter.lua
 Warlock.lua
+Mage.lua
+Priest.lua
+Rogue.lua
+Shaman.lua

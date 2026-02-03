@@ -180,8 +180,8 @@ function addon.OpenConfig()
     end
 
     -- Main Window
-    configFrame = CreateFrame("Frame", "MonkStaggerBarConfig", UIParent, "BasicFrameTemplateWithInset")
-    configFrame:SetSize(500, 400)
+    configFrame = CreateFrame("Frame", "MSBConfigFrame", UIParent, "BasicFrameTemplateWithInset")
+    configFrame:SetSize(600, 500)
     configFrame:SetPoint("CENTER")
     configFrame:SetMovable(true)
     configFrame:EnableMouse(true)
@@ -576,6 +576,146 @@ function addon.OpenConfig()
             
         return page
     end
+    
+    local function CreateMagePage()
+        local page = CreateFrame("Frame", nil, contentFrame)
+        page:SetAllPoints(true)
+        page:Hide()
+        
+        CreateSlider(page, "MSBMageManaRatio", "Mana Bar Height %", 0, 100, 5, 
+            function() return (MonkStaggerBarDB.mageManaRatio or 0.2) * 100 end,
+            function(val) 
+                MonkStaggerBarDB.mageManaRatio = val / 100
+                if addon.OnLayoutUpdate then addon.OnLayoutUpdate() end
+            end, -20)
+            
+        CreateColorPicker(page, "MSBColorArcaneCharges", "Arcane Charges Color", 
+            function() 
+                local c = MonkStaggerBarDB.colors.arcaneCharges or {r=0.1, g=0.5, b=1}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.arcaneCharges = {r=r, g=g, b=b}
+                if addon.UpdateMageResources then addon.UpdateMageResources() end
+            end, -70)
+            
+        CreateColorPicker(page, "MSBColorMageMana", "Mana Bar Color", 
+            function() 
+                local c = MonkStaggerBarDB.colors.mageMana or {r=0, g=0, b=1}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.mageMana = {r=r, g=g, b=b}
+                if addon.UpdateMageResources then addon.UpdateMageResources() end
+            end, -110)
+            
+        return page
+    end
+
+    local function CreatePriestPage()
+        local page = CreateFrame("Frame", nil, contentFrame)
+        page:SetAllPoints(true)
+        page:Hide()
+        
+        CreateSlider(page, "MSBPriestManaRatio", "Mana Bar Height %", 0, 100, 5, 
+            function() return (MonkStaggerBarDB.priestManaRatio or 0.2) * 100 end,
+            function(val) 
+                MonkStaggerBarDB.priestManaRatio = val / 100
+                if addon.OnLayoutUpdate then addon.OnLayoutUpdate() end
+            end, -20)
+            
+        CreateColorPicker(page, "MSBColorInsanity", "Insanity Color", 
+            function() 
+                local c = MonkStaggerBarDB.colors.insanity or {r=0.4, g=0, b=0.8}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.insanity = {r=r, g=g, b=b}
+                if addon.UpdatePriestResources then addon.UpdatePriestResources() end
+            end, -70)
+            
+        CreateColorPicker(page, "MSBColorPriestMana", "Mana Bar Color", 
+            function() 
+                local c = MonkStaggerBarDB.colors.priestMana or {r=0, g=0, b=1}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.priestMana = {r=r, g=g, b=b}
+                if addon.UpdatePriestResources then addon.UpdatePriestResources() end
+            end, -110)
+            
+        return page
+    end
+
+    local function CreateRoguePage()
+        local page = CreateFrame("Frame", nil, contentFrame)
+        page:SetAllPoints(true)
+        page:Hide()
+        
+        CreateSlider(page, "MSBRogueEnergyRatio", "Energy Bar Height %", 0, 100, 5, 
+            function() return (MonkStaggerBarDB.rogueEnergyRatio or 0.2) * 100 end,
+            function(val) 
+                MonkStaggerBarDB.rogueEnergyRatio = val / 100
+                if addon.OnLayoutUpdate then addon.OnLayoutUpdate() end
+            end, -20)
+            
+        CreateColorPicker(page, "MSBColorComboPoints", "Combo Points Color", 
+            function() 
+                local c = MonkStaggerBarDB.colors.comboPoints or {r=1, g=0.9, b=0}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.comboPoints = {r=r, g=g, b=b}
+                if addon.UpdateRogueResources then addon.UpdateRogueResources() end
+            end, -70)
+            
+        CreateColorPicker(page, "MSBColorRogueEnergy", "Energy Bar Color", 
+            function() 
+                local c = MonkStaggerBarDB.colors.energy or {r=1, g=1, b=0}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.energy = {r=r, g=g, b=b}
+                if addon.UpdateRogueResources then addon.UpdateRogueResources() end
+            end, -110)
+            
+        return page
+    end
+
+    local function CreateShamanPage()
+        local page = CreateFrame("Frame", nil, contentFrame)
+        page:SetAllPoints(true)
+        page:Hide()
+        
+        CreateSlider(page, "MSBShamanManaRatio", "Mana Bar Height %", 0, 100, 5, 
+            function() return (MonkStaggerBarDB.shamanManaRatio or 0.2) * 100 end,
+            function(val) 
+                MonkStaggerBarDB.shamanManaRatio = val / 100
+                if addon.OnLayoutUpdate then addon.OnLayoutUpdate() end
+            end, -20)
+            
+        CreateColorPicker(page, "MSBColorMaelstrom", "Maelstrom Color", 
+            function() 
+                local c = MonkStaggerBarDB.colors.maelstrom or {r=0, g=0.5, b=1}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.maelstrom = {r=r, g=g, b=b}
+                if addon.UpdateShamanResources then addon.UpdateShamanResources() end
+            end, -70)
+            
+        CreateColorPicker(page, "MSBColorShamanMana", "Mana Bar Color", 
+            function() 
+                local c = MonkStaggerBarDB.colors.shamanMana or {r=0, g=0, b=1}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.shamanMana = {r=r, g=g, b=b}
+                if addon.UpdateShamanResources then addon.UpdateShamanResources() end
+            end, -110)
+            
+        return page
+    end
 
     pages["General"] = CreateGeneralPage()
     pages["Monk"] = CreateMonkPage()
@@ -587,6 +727,10 @@ function addon.OpenConfig()
     pages["Paladin"] = CreatePaladinPage()
     pages["Hunter"] = CreateHunterPage()
     pages["Warlock"] = CreateWarlockPage()
+    pages["Mage"] = CreateMagePage()
+    pages["Priest"] = CreatePriestPage()
+    pages["Rogue"] = CreateRoguePage()
+    pages["Shaman"] = CreateShamanPage()
     
     -- Nav Buttons
     local function SwitchTo(name)
@@ -615,6 +759,14 @@ function addon.OpenConfig()
     CreateNavButton("Paladin", -220)
     CreateNavButton("Hunter", -250)
     CreateNavButton("Warlock", -280)
+    CreateNavButton("Mage", -310)
+    CreateNavButton("Priest", -340)
+    CreateNavButton("Rogue", -370)
+    CreateNavButton("Shaman", -400)
     
     SwitchTo("General")
 end
+
+-- PLACEHOLDER FOR NEW CONFIG FUNCTIONS --
+-- I am inserting them before the page registration so they are defined
+

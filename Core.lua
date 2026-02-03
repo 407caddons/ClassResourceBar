@@ -29,11 +29,31 @@ local defaults = {
         hunterFocus = {r=1, g=0.5, b=0.25}, -- Orange
         warlockShards = {r=0.58, g=0.51, b=0.79}, -- Purple
         warlockMana = {r=0, g=0, b=1}, -- Blue
+        
+        -- Mage
+        arcaneCharges = {r=0.1, g=0.5, b=1}, -- Cyan/Blue
+        mageMana = {r=0, g=0, b=1}, -- Blue
+        
+        -- Priest
+        insanity = {r=0.4, g=0, b=0.8}, -- Dark Purple
+        priestMana = {r=0, g=0, b=1}, -- Blue
+        
+        -- Rogue
+        energy = {r=1, g=1, b=0}, -- Yellow
+        comboPoints = {r=1, g=0.9, b=0}, -- Yellow/Gold (Classic CP)
+        
+        -- Shaman
+        maelstrom = {r=0, g=0.5, b=1}, -- Blue
+        shamanMana = {r=0, g=0, b=1}, -- Blue
     },
     runeHeightRatio = 0.2,
     druidBottomRatio = 0.2,
     paladinManaRatio = 0.2,
     warlockManaRatio = 0.2,
+    mageManaRatio = 0.2,
+    priestManaRatio = 0.2,
+    rogueEnergyRatio = 0.2,
+    shamanManaRatio = 0.2,
     barTexture = "Interface\\TargetingFrame\\UI-StatusBar",
 }
 
