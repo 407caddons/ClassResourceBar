@@ -74,18 +74,9 @@ function addon.InitializeModule()
 end
 
 function addon.UpdatePaladinVisibility()
-    local spec = GetSpecialization()
-    local specID = spec and GetSpecializationInfo(spec)
-    
-    local isProt = (specID == SPEC_PROTECTION)
-    
-    if isProt then
-        manaBar:Show()
-        for i = 1, 5 do hpBlocks[i]:Show() end
-    else
-        manaBar:Hide()
-        for i = 1, 5 do hpBlocks[i]:Hide() end
-    end
+    -- Always show for Paladin (All specs use Mana + Holy Power to some extent, or at least Holy Power)
+    manaBar:Show()
+    for i = 1, 5 do hpBlocks[i]:Show() end
 end
 
 function addon.UpdatePaladinResources()
