@@ -10,7 +10,7 @@ local FURY_COLOR = {r = 0.64, g = 0.19, b = 0.79}
 function addon.InitializeModule()
     local frame = addon.Frame
     
-    -- Setup Fury Bar (Fills text)
+    -- Setup Fury Bar
     furyBar = CreateFrame("StatusBar", nil, frame)
     furyBar:SetAllPoints(frame)
     local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
@@ -34,7 +34,6 @@ function addon.InitializeModule()
 
     -- Update Loop
     -- No specific update loop needed for DH, handled by events
-    -- frame:SetScript("OnUpdate", nil) -- Removed to preserve Core loop
     
     -- Register Events
     local eventFrame = CreateFrame("Frame")
@@ -62,15 +61,7 @@ end
 function addon.UpdateFury()
     if not furyBar then return end
     
-    -- Check Spec (Vengeance = 581)
-    local spec = GetSpecialization()
-    local specID = spec and GetSpecializationInfo(spec)
-    
-    if specID ~= 581 then
-        furyBar:Hide()
-        return
-    end
-    
+    -- Show for all specs (Havoc, Vengeance, Devourer)
     furyBar:Show()
     
     local power = UnitPower("player", Enum.PowerType.Fury)
