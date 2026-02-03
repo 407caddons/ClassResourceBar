@@ -33,7 +33,8 @@ function addon.InitializeModule()
     furyBar.text:SetText(UnitPower("player", Enum.PowerType.Fury))
 
     -- Update Loop
-    frame:SetScript("OnUpdate", nil)
+    -- No specific update loop needed for DH, handled by events
+    -- frame:SetScript("OnUpdate", nil) -- Removed to preserve Core loop
     
     -- Register Events
     local eventFrame = CreateFrame("Frame")

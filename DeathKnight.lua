@@ -50,10 +50,10 @@ function addon.InitializeModule()
     -- Initial Layout
     addon.OnLayoutUpdate()
 
-    -- Start Update Loop
-    frame:SetScript("OnUpdate", function()
+    -- Start Update Loop via Core hook
+    addon.ModuleOnUpdate = function(elapsed)
          addon.UpdateRunes()
-    end)
+    end
     
     -- Register Events
     local eventFrame = CreateFrame("Frame")
@@ -69,8 +69,6 @@ end
 function addon.OnLayoutUpdate()
     if not MonkStaggerBarDB or not runicPowerBar then return end
     local frame = addon.Frame
-    local w, h = MonkStaggerBarDB.width, MonkStaggerBarDB.height
-    
     local h = MonkStaggerBarDB.height
     local ratio = MonkStaggerBarDB.runeHeightRatio or 0.2
     

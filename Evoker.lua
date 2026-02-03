@@ -14,7 +14,8 @@ function addon.InitializeModule()
     -- Create Bar
     manaBar = CreateFrame("StatusBar", nil, frame)
     manaBar:SetAllPoints(frame)
-    manaBar:SetStatusBarTexture("Interface\\TargetingFrame\\UI-StatusBar")
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    manaBar:SetStatusBarTexture(texture)
     manaBar:SetMinMaxValues(0, 100)
     
     -- Background
@@ -60,4 +61,10 @@ end
 
 function addon.OnLayoutUpdate()
     -- Bar uses SetAllPoints, so it resizes automatically with the main frame
+end
+
+function addon.OnTextureUpdate()
+    if not manaBar then return end
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    manaBar:SetStatusBarTexture(texture)
 end

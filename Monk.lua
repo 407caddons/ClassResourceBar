@@ -72,11 +72,11 @@ function addon.InitializeModule()
         end
     end)
     
-    -- Update Loop for Stagger (Smoother?)
-    -- Or trigger via OnEvent. Original had OnUpdate. Keeping it.
-    frame:SetScript("OnUpdate", function()
+    -- Update Loop for Stagger
+    -- We now hook into the Core's centralized OnUpdate instead of overwriting it
+    addon.ModuleOnUpdate = function(elapsed)
         addon.UpdateStagger()
-    end)
+    end
     
     addon.UpdateMonkLayout()
     addon.UpdateStagger()

@@ -262,6 +262,15 @@ function addon.OpenConfig()
                 end
             end, -220)
 
+        CreateCheckbox(page, "MSBHideFlying", "Hide While Flying", 
+            function() return MonkStaggerBarDB.hideWhileFlying end,
+            function(checked)
+                MonkStaggerBarDB.hideWhileFlying = checked
+                if addon.CheckFlyingState then 
+                    addon.CheckFlyingState(0.2) -- Force check 
+                end
+            end, -250)
+
         local textureItems = {
             { text = "Default", value = "Interface\\TargetingFrame\\UI-StatusBar" },
             { text = "Smooth", value = "Interface\\AddOns\\ClassResourceBar\\MonkStaggerBarIcon.png" }, -- Placeholder for smooth if no specific path, but let's find better ones
@@ -278,7 +287,7 @@ function addon.OpenConfig()
             function(v)
                 MonkStaggerBarDB.barTexture = v
                 if addon.UpdateTextures then addon.UpdateTextures() end
-            end, -260)
+            end, -300)
 
         return page
     end

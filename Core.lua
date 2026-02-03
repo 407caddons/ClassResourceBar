@@ -12,6 +12,7 @@ local defaults = {
     height = 20,
     locked = false,
     minimapPos = 225,
+    hideWhileFlying = false,
     colors = {
         light = {r=0, g=1, b=0},
         moderate = {r=1, g=1, b=0},
@@ -31,7 +32,6 @@ local defaults = {
     },
     runeHeightRatio = 0.2,
     druidBottomRatio = 0.2,
-    paladinManaRatio = 0.2,
     paladinManaRatio = 0.2,
     warlockManaRatio = 0.2,
     barTexture = "Interface\\TargetingFrame\\UI-StatusBar",
@@ -106,7 +106,21 @@ function addon.Initialize()
     end
     addon.CreateMinimapButton()
     
+    -- Setup flying state checker and centralized update loop
+    frame:SetScript("OnUpdate", function(self, elapsed)
+        -- Global checks
+        if addon.CheckFlyingState then
+            addon.CheckFlyingState(elapsed)
+        end
+        
+        -- Module specific update hook
+        if addon.ModuleOnUpdate then
+            addon.ModuleOnUpdate(elapsed)
+        end
+    end)
+    
     -- Initialize Active Module
+    addon.ModuleOnUpdate = nil -- Reset before init
     if addon.InitializeModule then
         addon.InitializeModule()
     end
@@ -142,6 +156,30 @@ function addon.UpdateTextures()
         addon.OnTextureUpdate()
     end
 end
+
+-- Flying State Check (Throttled)
+local lastFlyingState = false
+local flyingCheckThrottle = 0
+
+function addon.CheckFlyingState(elapsed)
+    if not MonkStaggerBarDB or not MonkStaggerBarDB.hideWhileFlying then 
+        if frame then frame:SetAlpha(1) end
+        return 
+    end
+    
+    flyingCheckThrottle = flyingCheckThrottle + elapsed
+    if flyingCheckThrottle < 0.1 then return end
+    flyingCheckThrottle = 0
+    
+    local isFlying = IsFlying()
+    if isFlying ~= lastFlyingState then
+        lastFlyingState = isFlying
+        if frame then
+            frame:SetAlpha(isFlying and 0 or 1)
+        end
+    end
+end
+
 
 -- Event Handling
 local eventFrame = CreateFrame("Frame")

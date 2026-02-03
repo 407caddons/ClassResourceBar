@@ -24,6 +24,24 @@ local FORM_CAT = 2
 -- Standard Indices: 1 Bear, 2 Cat, 3 Travel, 4 Moonkin/Tree (often). 
 -- API: GetShapeshiftForm() returns index.
 
+local function CreateResourceBar(name, parent)
+    local bar = CreateFrame("StatusBar", name, parent)
+    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+    bar:SetStatusBarTexture(texture)
+    bar:SetMinMaxValues(0, 100)
+    
+    -- Background
+    local bg = bar:CreateTexture(nil, "BACKGROUND")
+    bg:SetAllPoints(true)
+    bg:SetColorTexture(0, 0, 0, 0.5)
+    
+    -- Text
+    bar.text = bar:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    bar.text:SetPoint("CENTER")
+    
+    return bar
+end
+
 function addon.InitializeModule()
     local frame = addon.Frame
     
@@ -68,23 +86,7 @@ function addon.InitializeModule()
     addon.UpdateDruidLayout()
 end
 
-function CreateResourceBar(name, parent)
-    local bar = CreateFrame("StatusBar", name, parent)
-    local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
-    bar:SetStatusBarTexture(texture)
-    bar:SetMinMaxValues(0, 100)
-    
-    -- Background
-    local bg = bar:CreateTexture(nil, "BACKGROUND")
-    bg:SetAllPoints(true)
-    bg:SetColorTexture(0, 0, 0, 0.5)
-    
-    -- Text
-    bar.text = bar:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
-    bar.text:SetPoint("CENTER")
-    
-    return bar
-end
+
 
 function addon.UpdateDruidLayout()
     if not rageBar then return end
