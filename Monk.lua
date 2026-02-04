@@ -147,7 +147,6 @@ function addon.UpdateStagger()
     local stagger = UnitStagger("player") or 0
     local maxHealth = UnitHealthMax("player") or 1
     
-    if stagger ~= addon.lastStagger or maxHealth ~= addon.lastMaxHealth then
     if not issecretvalue(stagger) then
         addon.lastStagger = stagger
     end
@@ -155,34 +154,34 @@ function addon.UpdateStagger()
         addon.lastMaxHealth = maxHealth
     end
         
-        local percent = (stagger / maxHealth) * 100
-        staggerBar:SetMinMaxValues(0, maxHealth)
-        staggerBar:SetValue(stagger)
-        staggerBar.text:SetText(string.format("%d (%.1f%%)", stagger, percent))
-        
-        -- Stagger Colors
-        local colors = MonkStaggerBarDB.colors
-        local r, g, b = 0, 1, 0
-        
-        -- Thresholds: Light < 30%, Moderate < 60%, Heavy > 60% (Roughly)
-        -- Actually game logic defines colors based on threshold relative to health?
-        -- Standard icon colors: Green, Yellow, Red.
-        
-        -- Simplified Logic based on Percentage for now, or use API if available?
-        -- No direct API for Stagger Level Color, usually inferred.
-        if percent < 30 then
-            local c = colors.staggerLight or COLOR_STAGGER_LIGHT
-            r,g,b = c.r, c.g, c.b
-        elseif percent < 60 then
-            local c = colors.staggerModerate or COLOR_STAGGER_MODERATE
-            r,g,b = c.r, c.g, c.b
-        else
-             local c = colors.staggerHeavy or COLOR_STAGGER_HEAVY
-            r,g,b = c.r, c.g, c.b
-        end
-        staggerBar:SetStatusBarColor(r, g, b)
+    local percent = (stagger / maxHealth) * 100
+    staggerBar:SetMinMaxValues(0, maxHealth)
+    staggerBar:SetValue(stagger)
+    staggerBar.text:SetText(string.format("%d (%.1f%%)", stagger, percent))
+    
+    -- Stagger Colors
+    local colors = MonkStaggerBarDB.colors
+    local r, g, b = 0, 1, 0
+    
+    -- Thresholds: Light < 30%, Moderate < 60%, Heavy > 60% (Roughly)
+    -- Actually game logic defines colors based on threshold relative to health?
+    -- Standard icon colors: Green, Yellow, Red.
+    
+    -- Simplified Logic based on Percentage for now, or use API if available?
+    -- No direct API for Stagger Level Color, usually inferred.
+    if percent < 30 then
+        local c = colors.staggerLight or COLOR_STAGGER_LIGHT
+        r,g,b = c.r, c.g, c.b
+    elseif percent < 60 then
+        local c = colors.staggerModerate or COLOR_STAGGER_MODERATE
+        r,g,b = c.r, c.g, c.b
+    else
+            local c = colors.staggerHeavy or COLOR_STAGGER_HEAVY
+        r,g,b = c.r, c.g, c.b
     end
+    staggerBar:SetStatusBarColor(r, g, b)
 end
+
 
 function addon.UpdateEnergy()
     if not energyBar:IsVisible() then return end

@@ -2,7 +2,7 @@
 ## Title: Class resource bar
 ## Notes: Resource bar for all classes
 ## Author: 407c
-## Version: 1.6.1
+## Version: 1.6.2
 ## X-Curse-Project-ID: 1448507
 ## SavedVariables: MonkStaggerBarDB
 ## Category-enUS: Combat
