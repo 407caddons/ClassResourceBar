@@ -10,7 +10,6 @@ local defaults = {
     y = -200,
     width = 200,
     height = 20,
-    locked = false,
     minimapPos = 225,
     hideWhileFlying = false,
     colors = {
@@ -97,6 +96,7 @@ function addon.Initialize()
 
     -- Enable Mouse for dragging (Config mode)
     frame:SetMovable(true)
+    frame:SetResizable(true)  -- Enable resizing
     frame:EnableMouse(false) 
     frame:RegisterForDrag("LeftButton")
     frame:SetScript("OnDragStart", frame.StartMoving)
@@ -115,6 +115,8 @@ function addon.Initialize()
     resizeGrip:SetNormalTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Up")
     resizeGrip:SetHighlightTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Highlight")
     resizeGrip:SetPushedTexture("Interface\\ChatFrame\\UI-ChatIM-SizeGrabber-Down")
+    resizeGrip:EnableMouse(true)
+    resizeGrip:RegisterForClicks("LeftButtonDown", "LeftButtonUp")
     resizeGrip:SetScript("OnMouseDown", function(self)
         frame:StartSizing("BOTTOMRIGHT")
     end)
@@ -128,7 +130,22 @@ function addon.Initialize()
     frame:SetScript("OnSizeChanged", function(self, w, h)
         MonkStaggerBarDB.width = w
         MonkStaggerBarDB.height = h
-        addon.UpdateLayout()
+        -- Don't call UpdateLayout here to avoid anchor errors during resize
+        -- Just notify the module to update bar layouts
+        if addon.OnLayoutUpdate then
+            addon.OnLayoutUpdate()
+        end
+        -- Update config sliders if open (set flag to prevent callback loop)
+        if _G["MSBWidth"] then
+            _G["MSBWidth"].isUpdating = true
+            _G["MSBWidth"]:SetValue(w)
+            _G["MSBWidth"].isUpdating = false
+        end
+        if _G["MSBHeight"] then
+            _G["MSBHeight"].isUpdating = true
+            _G["MSBHeight"]:SetValue(h)
+            _G["MSBHeight"].isUpdating = false
+        end
     end)
     
     -- Initialize Minimap Button

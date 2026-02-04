@@ -1,8 +1,8 @@
 ## Interface: 120000
-## Title: Class resource bar
+## Title: |cff00ff96Class Resource Bar|r
 ## Notes: Resource bar for all classes
 ## Author: 407c
-## Version: 1.6.3
+## Version: 1.6.4
 ## X-Curse-Project-ID: 1448507
 ## SavedVariables: MonkStaggerBarDB
 ## Category-enUS: Combat

@@ -244,8 +244,7 @@ function addon.OpenConfig()
             end, -170)
             
         CreateCheckbox(page, "MSBDragCheck", "Unlock Frame", 
-            function() return MonkStaggerBarDB.locked == false end, -- Logic inverse for checkbox label "Unlock"? Or just simple.
-            -- Actually let's stick to "Unlock Frame" so checked = unlocked.
+            function() return false end,  -- Always starts unchecked (locked)
             function(checked)
                 if checked then
                     if addon.Frame then
