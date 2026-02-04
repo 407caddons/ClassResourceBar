@@ -154,7 +154,7 @@ function addon.UpdateStagger()
         addon.lastMaxHealth = maxHealth
     end
         
-    local percent = (stagger / maxHealth) * 100
+    local percent = (addon.lastStagger / addon.lastMaxHealth) * 100
     staggerBar:SetMinMaxValues(0, maxHealth)
     staggerBar:SetValue(stagger)
     staggerBar.text:SetText(string.format("%d (%.1f%%)", stagger, percent))
