@@ -148,8 +148,12 @@ function addon.UpdateStagger()
     local maxHealth = UnitHealthMax("player") or 1
     
     if stagger ~= addon.lastStagger or maxHealth ~= addon.lastMaxHealth then
+    if not issecretvalue(stagger) then
         addon.lastStagger = stagger
+    end
+    if not issecretvalue(maxHealth) and maxHealth > 0 then
         addon.lastMaxHealth = maxHealth
+    end
         
         local percent = (stagger / maxHealth) * 100
         staggerBar:SetMinMaxValues(0, maxHealth)
