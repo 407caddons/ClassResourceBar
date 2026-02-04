@@ -2,149 +2,186 @@ local addonName, addon = ...
 local _, playerClass = UnitClass("player")
 if playerClass ~= "MONK" then return end
 
-local STAGGER_LIGHT = 124275
-local STAGGER_MODERATE = 124274
-local STAGGER_HEAVY = 124273
+-- Specific spell/aura checks or power definitions
+-- Stagger is handled via UnitStagger. PowerType 12 = Chi.
 
-local staggerBar, energyBar
+-- Frames
+local staggerBar, energyBar, manaBar
+local chiBlocks = {}
 
-local COLOR_ENERGY_DEFAULT = {r=1, g=1, b=0}
+-- Spec IDs
+local SPEC_BREWMASTER = 268
+local SPEC_WINDWALKER = 269
+local SPEC_MISTWEAVER = 270
 
--- Cache for stagger values to handle "secret value" errors
+-- Defaults for Colors
+local COLOR_STAGGER_LIGHT = {r=0, g=1, b=0}
+local COLOR_STAGGER_MODERATE = {r=1, g=1, b=0}
+local COLOR_STAGGER_HEAVY = {r=1, g=0, b=0}
+local COLOR_ENERGY = {r=1, g=1, b=0}
+local COLOR_MANA = {r=0, g=0.5, b=1}
+local COLOR_CHI = {r=0.71, g=1, b=0.92}
+
 addon.lastStagger = 0
 addon.lastMaxHealth = 1
 
 function addon.InitializeModule()
     local frame = addon.Frame
-    
-    -- Create Stagger Bar
-    staggerBar = CreateFrame("StatusBar", nil, frame)
     local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
+
+    -- 1. Stagger Bar (Brewmaster)
+    staggerBar = CreateFrame("StatusBar", nil, frame)
     staggerBar:SetStatusBarTexture(texture)
-    staggerBar:GetStatusBarTexture():SetHorizTile(false)
     staggerBar:SetMinMaxValues(0, 100)
     staggerBar:SetValue(0)
     
-    local bg = staggerBar:CreateTexture(nil, "BACKGROUND")
-    bg:SetAllPoints(true)
-    bg:SetColorTexture(0, 0, 0, 0.5)
+    local sBg = staggerBar:CreateTexture(nil, "BACKGROUND")
+    sBg:SetAllPoints(true)
+    sBg:SetColorTexture(0, 0, 0, 0.5)
     
     staggerBar.text = staggerBar:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     staggerBar.text:SetPoint("CENTER")
     staggerBar.text:SetText("0 (0.0%)")
-    
-    -- Create Energy Bar
+
+    -- 2. Energy Bar (BM / WW)
     energyBar = CreateFrame("StatusBar", nil, frame)
     energyBar:SetStatusBarTexture(texture)
     energyBar:SetMinMaxValues(0, 100)
     energyBar:SetValue(0)
     
-    local bg2 = energyBar:CreateTexture(nil, "BACKGROUND")
-    bg2:SetAllPoints(true)
-    bg2:SetColorTexture(0, 0, 0, 0.5)
+    local eBg = energyBar:CreateTexture(nil, "BACKGROUND")
+    eBg:SetAllPoints(true)
+    eBg:SetColorTexture(0, 0, 0, 0.5)
     
     energyBar.text = energyBar:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     energyBar.text:SetPoint("CENTER")
-    energyBar.text:SetText("")
     
+    -- 3. Mana Bar (Mistweaver)
+    manaBar = CreateFrame("StatusBar", nil, frame)
+    manaBar:SetStatusBarTexture(texture)
+    manaBar:SetMinMaxValues(0, 100)
+    manaBar:SetValue(0)
+    
+    local mBg = manaBar:CreateTexture(nil, "BACKGROUND")
+    mBg:SetAllPoints(true)
+    mBg:SetColorTexture(0, 0, 0, 0.5)
+    
+    manaBar.text = manaBar:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
+    manaBar.text:SetPoint("CENTER")
+    
+    -- 4. Chi Blocks (Windwalker)
+    for i = 1, 6 do
+        local block = CreateFrame("Frame", nil, frame)
+        block.bg = block:CreateTexture(nil, "BACKGROUND")
+        block.bg:SetAllPoints(true)
+        block.bg:SetColorTexture(0.1, 0.1, 0.1, 0.8)
+        
+        block.fill = block:CreateTexture(nil, "OVERLAY")
+        block.fill:SetAllPoints(true)
+        local cChi = MonkStaggerBarDB.colors.chi or COLOR_CHI
+        block.fill:SetColorTexture(cChi.r, cChi.g, cChi.b)
+        block.fill:Hide()
+        
+        chiBlocks[i] = block
+    end
+
     -- Event Handling
     local eventFrame = CreateFrame("Frame")
     eventFrame:RegisterEvent("UNIT_HEALTH")
     eventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-    eventFrame:RegisterEvent("PLAYER_ENTERING_WORLD")
+    eventFrame:RegisterEvent("PLAYER_LOGIN")
     eventFrame:RegisterEvent("UNIT_POWER_UPDATE")
     eventFrame:RegisterEvent("UNIT_MAXPOWER")
-    eventFrame:RegisterEvent("PLAYER_LOGIN")
 
-    eventFrame:SetScript("OnEvent", function(self, event, arg1)
+    eventFrame:SetScript("OnEvent", function(self, event, arg1, arg2)
         if event == "UNIT_POWER_UPDATE" and arg1 == "player" then
-             addon.UpdateEnergy()
+            if arg2 == "CHI" or arg2 == "ENERGY" or arg2 == "MANA" then
+                addon.UpdateMonkResources()
+            end
         elseif event == "UNIT_MAXPOWER" and arg1 == "player" then
-             addon.UpdateEnergy()
-        elseif event == "PLAYER_LOGIN" or event == "PLAYER_ENTERING_WORLD" or event == "PLAYER_SPECIALIZATION_CHANGED" then
+             addon.UpdateMonkResources()
+             addon.UpdateMonkLayout() -- Max Chi might change
+        elseif event == "PLAYER_SPECIALIZATION_CHANGED" or event == "PLAYER_LOGIN" then
              addon.UpdateMonkLayout()
-             addon.UpdateStagger()
-             addon.UpdateEnergy()
-        elseif event == "UNIT_HEALTH" then
-             addon.UpdateStagger() -- Stagger contextually relates to health cap
-        else
+             addon.UpdateMonkResources()
+        elseif event == "UNIT_HEALTH" and arg1 == "player" then
              addon.UpdateStagger()
         end
     end)
     
-    -- Update Loop for Stagger
-    -- We now hook into the Core's centralized OnUpdate instead of overwriting it
+    -- Update Loop (Stagger is time-sensitive, but purely check once per frame? 
+    -- Actually standard OnUpdate isn't strictly needed if we trust events, 
+    -- but Stagger % updates as HP changes or Stagger decays.
+    -- We'll keep the module update hook.
     addon.ModuleOnUpdate = function(elapsed)
         addon.UpdateStagger()
     end
     
     addon.UpdateMonkLayout()
-    addon.UpdateStagger()
-    addon.UpdateEnergy()
+    addon.UpdateMonkResources()
 end
 
-function addon.UpdateMonkLayout()
-    if not staggerBar or not energyBar then return end
+function addon.UpdateMonkResources()
+   local spec = GetSpecialization()
+   local specID = spec and GetSpecializationInfo(spec)
+   
+   -- Brewmaster Handling
+   if specID == SPEC_BREWMASTER then
+       addon.UpdateStagger()
+       addon.UpdateEnergy()
+   
+   -- Windwalker Handling
+   elseif specID == SPEC_WINDWALKER then
+       addon.UpdateEnergy()
+       addon.UpdateChi()
+       
+   -- Mistweaver Handling
+   elseif specID == SPEC_MISTWEAVER then
+       addon.UpdateMana()
+   end
+end
+
+function addon.UpdateStagger()
+    if not staggerBar:IsVisible() then return end
     
-    local spec = GetSpecialization()
-    local specID = spec and GetSpecializationInfo(spec)
+    local stagger = UnitStagger("player") or 0
+    local maxHealth = UnitHealthMax("player") or 1
     
-    -- Only show for Brewmaster (268)
-    if specID ~= 268 then
-        staggerBar:Hide()
-        energyBar:Hide()
-        if addon.Frame then addon.Frame:SetBackdropBorderColor(0,0,0,0) end
-        return 
+    if stagger ~= addon.lastStagger or maxHealth ~= addon.lastMaxHealth then
+        addon.lastStagger = stagger
+        addon.lastMaxHealth = maxHealth
+        
+        local percent = (stagger / maxHealth) * 100
+        staggerBar:SetMinMaxValues(0, maxHealth)
+        staggerBar:SetValue(stagger)
+        staggerBar.text:SetText(string.format("%d (%.1f%%)", stagger, percent))
+        
+        -- Stagger Colors
+        local colors = MonkStaggerBarDB.colors
+        local r, g, b = 0, 1, 0
+        
+        -- Thresholds: Light < 30%, Moderate < 60%, Heavy > 60% (Roughly)
+        -- Actually game logic defines colors based on threshold relative to health?
+        -- Standard icon colors: Green, Yellow, Red.
+        
+        -- Simplified Logic based on Percentage for now, or use API if available?
+        -- No direct API for Stagger Level Color, usually inferred.
+        if percent < 30 then
+            local c = colors.staggerLight or COLOR_STAGGER_LIGHT
+            r,g,b = c.r, c.g, c.b
+        elseif percent < 60 then
+            local c = colors.staggerModerate or COLOR_STAGGER_MODERATE
+            r,g,b = c.r, c.g, c.b
+        else
+             local c = colors.staggerHeavy or COLOR_STAGGER_HEAVY
+            r,g,b = c.r, c.g, c.b
+        end
+        staggerBar:SetStatusBarColor(r, g, b)
     end
-    
-    -- Check Ratio
-    local energyRatio = MonkStaggerBarDB.monkEnergyRatio or 0
-    -- 0 means no energy bar (legacy behavior)
-    -- 1 means only energy bar (weird but requested logic support)
-    
-    local width = MonkStaggerBarDB.width or 200
-    local height = MonkStaggerBarDB.height or 20
-    
-    -- If ratio is 0, Stagger takes full height, Energy hidden
-    if energyRatio <= 0.01 then
-        staggerBar:Show()
-        staggerBar:ClearAllPoints()
-        staggerBar:SetAllPoints(addon.Frame)
-        
-        energyBar:Hide()
-    elseif energyRatio >= 0.99 then
-        staggerBar:Hide()
-        
-        energyBar:Show()
-        energyBar:ClearAllPoints()
-        energyBar:SetAllPoints(addon.Frame)
-    else
-        -- Split
-        staggerBar:Show()
-        energyBar:Show()
-        
-        local gap = 2
-        local energyHeight = (height - gap) * energyRatio
-        local staggerHeight = (height - gap) - energyHeight
-        
-        staggerBar:ClearAllPoints()
-        staggerBar:SetPoint("TOPLEFT", addon.Frame, "TOPLEFT")
-        staggerBar:SetPoint("TOPRIGHT", addon.Frame, "TOPRIGHT")
-        staggerBar:SetHeight(staggerHeight)
-        
-        energyBar:ClearAllPoints()
-        energyBar:SetPoint("BOTTOMLEFT", addon.Frame, "BOTTOMLEFT")
-        energyBar:SetPoint("BOTTOMRIGHT", addon.Frame, "BOTTOMRIGHT")
-        energyBar:SetHeight(energyHeight)
-    end
-    
-    -- Update Energy Color
-    local cEnergy = MonkStaggerBarDB.colors.monkEnergy or COLOR_ENERGY_DEFAULT
-    energyBar:SetStatusBarColor(cEnergy.r, cEnergy.g, cEnergy.b)
 end
 
 function addon.UpdateEnergy()
-    if not energyBar or not energyBar:IsShown() then return end
+    if not energyBar:IsVisible() then return end
     
     local energy = UnitPower("player", Enum.PowerType.Energy)
     local maxEnergy = UnitPowerMax("player", Enum.PowerType.Energy)
@@ -152,56 +189,119 @@ function addon.UpdateEnergy()
     energyBar:SetMinMaxValues(0, maxEnergy)
     energyBar:SetValue(energy)
     energyBar.text:SetText(energy)
+    
+    local c = MonkStaggerBarDB.colors.monkEnergy or COLOR_ENERGY
+    energyBar:SetStatusBarColor(c.r, c.g, c.b)
 end
 
-function addon.UpdateStagger()
-    if not staggerBar or not staggerBar:IsShown() then return end
+function addon.UpdateMana()
+    if not manaBar:IsVisible() then return end
     
-    local stagger = UnitStagger("player") or 0
-    local maxHealth = UnitHealthMax("player") or 1
+    local mana = UnitPower("player", Enum.PowerType.Mana)
+    local maxMana = UnitPowerMax("player", Enum.PowerType.Mana)
     
-    -- Update cache only if we get valid numbers
-    if not issecretvalue(stagger) then
-        addon.lastStagger = stagger
-    end
-    if not issecretvalue(maxHealth) and maxHealth > 0 then
-        addon.lastMaxHealth = maxHealth
-    end
+    manaBar:SetMinMaxValues(0, maxMana)
+    manaBar:SetValue(mana)
+    manaBar.text:SetText(mana)
     
-    -- Fallback to cached values for calculation
-    local s = addon.lastStagger
-    local m = addon.lastMaxHealth
-    local percent = s / m
-
-    staggerBar:SetMinMaxValues(0, maxHealth)
-    staggerBar:SetValue(stagger)
-    staggerBar.text:SetText(string.format("%d (%.1f%%)", stagger, percent * 100))
-    
-    -- Colors
-    local r, g, b = MonkStaggerBarDB.colors.light.r, MonkStaggerBarDB.colors.light.g, MonkStaggerBarDB.colors.light.b
-    
-    local isLight = C_UnitAuras.GetPlayerAuraBySpellID(STAGGER_LIGHT)
-    local isModerate = C_UnitAuras.GetPlayerAuraBySpellID(STAGGER_MODERATE)
-    local isHeavy = C_UnitAuras.GetPlayerAuraBySpellID(STAGGER_HEAVY)
-
-    if isHeavy then
-        r, g, b = MonkStaggerBarDB.colors.heavy.r, MonkStaggerBarDB.colors.heavy.g, MonkStaggerBarDB.colors.heavy.b
-    elseif isModerate then
-        r, g, b = MonkStaggerBarDB.colors.moderate.r, MonkStaggerBarDB.colors.moderate.g, MonkStaggerBarDB.colors.moderate.b
-    elseif isLight then
-        r, g, b = MonkStaggerBarDB.colors.light.r, MonkStaggerBarDB.colors.light.g, MonkStaggerBarDB.colors.light.b
-    end
-    
-    staggerBar:SetStatusBarColor(r, g, b)
+    local c = MonkStaggerBarDB.colors.monkMana or COLOR_MANA
+    manaBar:SetStatusBarColor(c.r, c.g, c.b)
 end
 
-function addon.OnLayoutUpdate()
-    addon.UpdateMonkLayout()
+function addon.UpdateChi()
+    -- Windwalker Chi
+    local chi = UnitPower("player", Enum.PowerType.Chi)
+    local maxChi = UnitPowerMax("player", Enum.PowerType.Chi)
+    
+    local c = MonkStaggerBarDB.colors.chi or COLOR_CHI
+    
+    for i = 1, #chiBlocks do
+        if i <= maxChi and chiBlocks[i]:IsVisible() then
+            if i <= chi then
+                chiBlocks[i].fill:Show()
+                chiBlocks[i].fill:SetColorTexture(c.r, c.g, c.b)
+            else
+                chiBlocks[i].fill:Hide()
+            end
+        end
+    end
+end
+
+function addon.UpdateMonkLayout()
+    local frame = addon.Frame
+    local w, h = MonkStaggerBarDB.width, MonkStaggerBarDB.height
+    local gap = 2
+    local availableHeight = h - gap
+    
+    local spec = GetSpecialization()
+    local specID = spec and GetSpecializationInfo(spec)
+    
+    -- Hide All First
+    staggerBar:Hide()
+    energyBar:Hide()
+    manaBar:Hide()
+    for i=1, #chiBlocks do chiBlocks[i]:Hide() end
+    
+    if specID == SPEC_BREWMASTER then
+        staggerBar:Show()
+        energyBar:Show()
+        
+        -- Existing BM Logic: split based on maybe 30/70? Or use ratios?
+        -- Code didn't have explicit ratio slider for BM before, assumed fixed?
+        -- Let's check Core defaults or Config... it had "monkEnergyRatio"?
+        -- Let's use a default if not set.
+        local bmEnergyRatio = MonkStaggerBarDB.monkEnergyRatio or 0.3 -- Default
+        
+        local energyH = availableHeight * bmEnergyRatio
+        local staggerH = availableHeight * (1 - bmEnergyRatio)
+        
+        staggerBar:SetSize(w, staggerH)
+        staggerBar:SetPoint("TOPLEFT", frame, "TOPLEFT")
+        
+        energyBar:SetSize(w, energyH)
+        energyBar:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT")
+        
+    elseif specID == SPEC_WINDWALKER then
+        -- Chi (Top), Energy (Bottom)
+        energyBar:Show()
+        
+        local wwRatio = MonkStaggerBarDB.windwalkerEnergyRatio or 0.2
+        local energyH = availableHeight * wwRatio
+        local chiH = availableHeight * (1 - wwRatio)
+        
+        energyBar:SetSize(w, energyH)
+        energyBar:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT")
+        
+        local maxChi = UnitPowerMax("player", Enum.PowerType.Chi)
+        if maxChi == 0 then maxChi = 5 end
+        
+        local blockWidth = w / maxChi
+        for i = 1, maxChi do
+            chiBlocks[i]:Show()
+            chiBlocks[i]:SetSize(blockWidth - 1, chiH)
+            chiBlocks[i]:SetPoint("TOPLEFT", frame, "TOPLEFT", (i-1)*blockWidth, 0)
+        end
+        
+    elseif specID == SPEC_MISTWEAVER then
+        -- Just Mana Bar
+        manaBar:Show()
+        
+        -- Full height? Or allow ratio if we want to add Focus tea later?
+        -- Request says "just a mana bar".
+        local mwRatio = MonkStaggerBarDB.monkManaRatio or 1.0 -- Default full usage if set to 1.
+        -- If user set ratio in config (e.g. 0.2), usually that implies bottom bar. 
+        -- But for single bar, use full height.
+        -- Config slider was "Mana Bar Height %". If it's meant to fill frame, we should ignore ratio 
+        -- unless there's a secondary resource. Since there isn't one yet, force full.
+        
+        manaBar:SetSize(w, h)
+        manaBar:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT")
+    end
 end
 
 function addon.OnTextureUpdate()
-    if not staggerBar or not energyBar then return end
     local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
-    staggerBar:SetStatusBarTexture(texture)
-    energyBar:SetStatusBarTexture(texture)
+    if staggerBar then staggerBar:SetStatusBarTexture(texture) end
+    if energyBar then energyBar:SetStatusBarTexture(texture) end
+    if manaBar then manaBar:SetStatusBarTexture(texture) end
 end

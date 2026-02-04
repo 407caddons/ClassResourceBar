@@ -14,9 +14,12 @@ local defaults = {
     minimapPos = 225,
     hideWhileFlying = false,
     colors = {
-        light = {r=0, g=1, b=0},
-        moderate = {r=1, g=1, b=0},
-        heavy = {r=1, g=0, b=0},
+        staggerLight = {r=0, g=1, b=0},
+        staggerModerate = {r=1, g=1, b=0},
+        staggerHeavy = {r=1, g=0, b=0},
+        monkEnergy = {r=1, g=1, b=0},
+        monkMana = {r=0, g=0.5, b=1},
+        chi = {r=0.71, g=1, b=0.92}, -- Light Jade/Teal
         runicPower = {r=0, g=0.82, b=1},
         runesReady = {r=0.69, g=0.38, b=1},
         runesRecharging = {r=0.4, g=0.4, b=0.4},
@@ -24,6 +27,7 @@ local defaults = {
         rage = {r=1, g=0, b=0},
         energy = {r=1, g=1, b=0},
         mana = {r=0, g=0, b=1},
+        astralPower = {r=0, g=0.5, b=1}, -- Blue-ish/Star color
         holyPower = {r=1, g=0.9, b=0},
         paladinMana = {r=0, g=0, b=1},
         hunterFocus = {r=1, g=0.5, b=0.25}, -- Orange
@@ -45,9 +49,16 @@ local defaults = {
         -- Shaman
         maelstrom = {r=0, g=0.5, b=1}, -- Blue
         shamanMana = {r=0, g=0, b=1}, -- Blue
+        
+        -- Evoker
+        essence = {r=0.4, g=0.8, b=0.9}, -- Cyan/Teal
+        evokerMana = {r=0, g=0.5, b=1},
     },
     runeHeightRatio = 0.2,
     druidBottomRatio = 0.2,
+    monkManaRatio = 0.2,
+    windwalkerEnergyRatio = 0.2,
+    evokerManaRatio = 0.2,
     paladinManaRatio = 0.2,
     warlockManaRatio = 0.2,
     mageManaRatio = 0.2,

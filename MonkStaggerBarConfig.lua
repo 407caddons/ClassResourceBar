@@ -197,7 +197,7 @@ function addon.OpenConfig()
     local defaultCloseBtn = _G[configFrame:GetName() .. "CloseButton"]
     if defaultCloseBtn then defaultCloseBtn:Hide() end
     
-    tinsert(UISpecialFrames, "MonkStaggerBarConfig")
+    tinsert(UISpecialFrames, "MSBConfigFrame")
 
     -- Navigation Frame (Left)
     local navFrame = CreateFrame("Frame", nil, configFrame)
@@ -297,7 +297,75 @@ function addon.OpenConfig()
         page:SetAllPoints(true)
         page:Hide()
         
-        -- Energy Ratio Slider
+        -- Stagger Colors
+        CreateColorPicker(page, "MSBColorStaggerLight", "Stagger Light", 
+            function() 
+                local c = MonkStaggerBarDB.colors.light or {r=0, g=1, b=0}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.light = {r=r, g=g, b=b}
+                if addon.UpdateStagger then addon.UpdateStagger() end
+            end, -20)
+            
+        CreateColorPicker(page, "MSBColorStaggerModerate", "Stagger Moderate", 
+            function() 
+                local c = MonkStaggerBarDB.colors.moderate or {r=1, g=1, b=0}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.moderate = {r=r, g=g, b=b}
+                if addon.UpdateStagger then addon.UpdateStagger() end
+            end, -50)
+            
+        CreateColorPicker(page, "MSBColorStaggerHeavy", "Stagger Heavy", 
+            function() 
+                local c = MonkStaggerBarDB.colors.heavy or {r=1, g=0, b=0}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.heavy = {r=r, g=g, b=b}
+                if addon.UpdateStagger then addon.UpdateStagger() end
+            end, -80)
+
+        -- New Sliders
+         CreateSlider(page, "MSBMonkManaRatio", "Mana Bar Height %", 0, 100, 5, 
+            function() return (MonkStaggerBarDB.monkManaRatio or 0.2) * 100 end,
+            function(val) 
+                MonkStaggerBarDB.monkManaRatio = val / 100
+                if addon.OnLayoutUpdate then addon.OnLayoutUpdate() end
+            end, -130)
+            
+        CreateSlider(page, "MSBMonkEnergyRatio", "WW Energy Height %", 0, 100, 5, 
+            function() return (MonkStaggerBarDB.windwalkerEnergyRatio or 0.2) * 100 end,
+            function(val) 
+                MonkStaggerBarDB.windwalkerEnergyRatio = val / 100
+                if addon.OnLayoutUpdate then addon.OnLayoutUpdate() end
+            end, -170)
+
+        -- New Colors
+        CreateColorPicker(page, "MSBColorChi", "Chi Color", 
+            function() 
+                local c = MonkStaggerBarDB.colors.chi or {r=0.71, g=1, b=0.92}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.chi = {r=r, g=g, b=b}
+                if addon.UpdateMonkLayout then addon.UpdateMonkLayout() end
+            end, -220)
+            
+        CreateColorPicker(page, "MSBColorMonkMana", "Mana Color", 
+            function() 
+                local c = MonkStaggerBarDB.colors.monkMana or {r=0, g=0.5, b=1}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.monkMana = {r=r, g=g, b=b}
+                if addon.UpdateMonkLayout then addon.UpdateMonkLayout() end
+            end, -260)
+            
+        return page
+    end
         CreateSlider(page, "MSBMonkEnergyRatio", "Energy Bar Height %", 0, 100, 5, 
             function() return (MonkStaggerBarDB.monkEnergyRatio or 0) * 100 end,
             function(val) 
@@ -450,6 +518,17 @@ function addon.OpenConfig()
                 if addon.UpdateDruidLayout then addon.UpdateDruidLayout() end
             end, -150)
             
+        -- Astral Power Color
+        CreateColorPicker(page, "MSBColorAstral", "Astral Power Color", 
+            function() 
+                local c = MonkStaggerBarDB.colors.astralPower or {r=0, g=0.5, b=1}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.astralPower = {r=r, g=g, b=b}
+                if addon.UpdateDruidLayout then addon.UpdateDruidLayout() end
+            end, -190)
+            
         return page
     end
 
@@ -458,6 +537,23 @@ function addon.OpenConfig()
         page:SetAllPoints(true)
         page:Hide()
         
+        CreateSlider(page, "MSBEvokerManaRatio", "Mana Bar Height %", 0, 100, 5, 
+            function() return (MonkStaggerBarDB.evokerManaRatio or 0.2) * 100 end,
+            function(val) 
+                MonkStaggerBarDB.evokerManaRatio = val / 100
+                if addon.OnLayoutUpdate then addon.OnLayoutUpdate() end
+            end, -20)
+            
+         CreateColorPicker(page, "MSBColorEssence", "Essence Color", 
+            function() 
+                local c = MonkStaggerBarDB.colors.essence or {r=0.4, g=0.8, b=0.9}
+                return c.r, c.g, c.b 
+            end,
+            function(r,g,b) 
+                MonkStaggerBarDB.colors.essence = {r=r, g=g, b=b}
+                if addon.UpdateEvokerResources then addon.UpdateEvokerResources() end
+            end, -70)
+        
         CreateColorPicker(page, "MSBColorEvokerMana", "Mana Bar Color", 
             function() 
                 local c = MonkStaggerBarDB.colors.evokerMana or {r=0, g=0.5, b=1}
@@ -465,8 +561,8 @@ function addon.OpenConfig()
             end,
             function(r,g,b) 
                 MonkStaggerBarDB.colors.evokerMana = {r=r, g=g, b=b}
-                if addon.UpdateResources then addon.UpdateResources() end
-            end, -20)
+                if addon.UpdateEvokerResources then addon.UpdateEvokerResources() end
+            end, -110)
             
         return page
     end
@@ -733,12 +829,30 @@ function addon.OpenConfig()
     pages["Shaman"] = CreateShamanPage()
     
     -- Nav Buttons
+    local navButtons = {}
+    
     local function SwitchTo(name)
+        -- Hide all pages
         for k, v in pairs(pages) do
             v:Hide()
         end
-        pages[name]:Show()
-        activePage = name
+        
+        -- Show selected page
+        if pages[name] then
+            pages[name]:Show()
+            activePage = name
+        end
+        
+        -- Update Buttons (Highlight active)
+        for btnName, btn in pairs(navButtons) do
+            if btnName == name then
+                btn:LockHighlight()
+                btn:SetEnabled(false) -- Disable to look "pressed"/active
+            else
+                btn:UnlockHighlight()
+                btn:SetEnabled(true)
+            end
+        end
     end
 
     local function CreateNavButton(label, yOffset)
@@ -747,22 +861,25 @@ function addon.OpenConfig()
         btn:SetPoint("TOPLEFT", navFrame, "TOPLEFT", 0, yOffset)
         btn:SetText(label)
         btn:SetScript("OnClick", function() SwitchTo(label) end)
+        navButtons[label] = btn
     end
     
+    -- Sorted Alphabetically
     CreateNavButton("General", -10)
-    CreateNavButton("Monk", -40)
-    CreateNavButton("Death Knight", -70)
-    CreateNavButton("Demon Hunter", -100)
-    CreateNavButton("Druid", -130)
-    CreateNavButton("Evoker", -160)
-    CreateNavButton("Warrior", -190)
-    CreateNavButton("Paladin", -220)
-    CreateNavButton("Hunter", -250)
-    CreateNavButton("Warlock", -280)
-    CreateNavButton("Mage", -310)
-    CreateNavButton("Priest", -340)
-    CreateNavButton("Rogue", -370)
-    CreateNavButton("Shaman", -400)
+    
+    CreateNavButton("Death Knight", -40)
+    CreateNavButton("Demon Hunter", -70)
+    CreateNavButton("Druid", -100)
+    CreateNavButton("Evoker", -130)
+    CreateNavButton("Hunter", -160)
+    CreateNavButton("Mage", -190)
+    CreateNavButton("Monk", -220)
+    CreateNavButton("Paladin", -250)
+    CreateNavButton("Priest", -280)
+    CreateNavButton("Rogue", -310)
+    CreateNavButton("Shaman", -340)
+    CreateNavButton("Warlock", -370)
+    CreateNavButton("Warrior", -400)
     
     SwitchTo("General")
 end
