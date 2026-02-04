@@ -366,48 +366,7 @@ function addon.OpenConfig()
             
         return page
     end
-        CreateSlider(page, "MSBMonkEnergyRatio", "Energy Bar Height %", 0, 100, 5, 
-            function() return (MonkStaggerBarDB.monkEnergyRatio or 0) * 100 end,
-            function(val) 
-                MonkStaggerBarDB.monkEnergyRatio = val / 100
-                if addon.UpdateMonkLayout then addon.UpdateMonkLayout() end
-                if addon.UpdateEnergy then addon.UpdateEnergy() end
-            end, -20)
-        
-        CreateColorPicker(page, "MSBColorLight", "Light Stagger", 
-            function() return MonkStaggerBarDB.colors.light.r, MonkStaggerBarDB.colors.light.g, MonkStaggerBarDB.colors.light.b end, 
-            function(r,g,b) 
-                MonkStaggerBarDB.colors.light = {r=r, g=g, b=b}
-                if addon.UpdateStagger then addon.UpdateStagger() end
-            end, -70)
-            
-        CreateColorPicker(page, "MSBColorModerate", "Moderate Stagger", 
-            function() return MonkStaggerBarDB.colors.moderate.r, MonkStaggerBarDB.colors.moderate.g, MonkStaggerBarDB.colors.moderate.b end,
-            function(r,g,b) 
-                MonkStaggerBarDB.colors.moderate = {r=r, g=g, b=b}
-                if addon.UpdateStagger then addon.UpdateStagger() end
-            end, -110)
-            
-        CreateColorPicker(page, "MSBColorHeavy", "Heavy Stagger", 
-            function() return MonkStaggerBarDB.colors.heavy.r, MonkStaggerBarDB.colors.heavy.g, MonkStaggerBarDB.colors.heavy.b end,
-            function(r,g,b) 
-                MonkStaggerBarDB.colors.heavy = {r=r, g=g, b=b}
-                if addon.UpdateStagger then addon.UpdateStagger() end
-            end, -150)
-            
-        -- Energy Color
-        CreateColorPicker(page, "MSBColorMonkEnergy", "Energy Bar Color", 
-            function() 
-                local c = MonkStaggerBarDB.colors.monkEnergy or {r=1, g=1, b=0}
-                return c.r, c.g, c.b 
-            end,
-            function(r,g,b) 
-                MonkStaggerBarDB.colors.monkEnergy = {r=r, g=g, b=b}
-                if addon.UpdateMonkLayout then addon.UpdateMonkLayout() end
-            end, -190)
-            
-        return page
-    end
+
     
     local function CreateDKPage()
         local page = CreateFrame("Frame", nil, contentFrame)
