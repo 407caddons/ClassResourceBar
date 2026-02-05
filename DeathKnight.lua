@@ -128,7 +128,7 @@ function addon.UpdateRunes()
                 rBar:SetMinMaxValues(0, 1)
                 rBar:SetValue(1)
                 rBar:SetStatusBarColor(cReady.r, cReady.g, cReady.b) 
-            else
+            elseif start and duration then
                 rBar:SetMinMaxValues(start, start + duration)
                 rBar:SetValue(GetTime())
                 rBar:SetStatusBarColor(cRecharge.r, cRecharge.g, cRecharge.b)
