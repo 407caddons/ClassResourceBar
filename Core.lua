@@ -13,45 +13,45 @@ local defaults = {
     minimapPos = 225,
     hideWhileFlying = false,
     colors = {
-        staggerLight = {r=0, g=1, b=0},
-        staggerModerate = {r=1, g=1, b=0},
-        staggerHeavy = {r=1, g=0, b=0},
-        monkEnergy = {r=1, g=1, b=0},
-        monkMana = {r=0, g=0.5, b=1},
-        chi = {r=0.71, g=1, b=0.92}, -- Light Jade/Teal
-        runicPower = {r=0, g=0.82, b=1},
-        runesReady = {r=0.69, g=0.38, b=1},
-        runesRecharging = {r=0.4, g=0.4, b=0.4},
-        fury = {r=0.64, g=0.19, b=0.79}, -- DH Purple
-        rage = {r=1, g=0, b=0},
-        energy = {r=1, g=1, b=0},
-        mana = {r=0, g=0, b=1},
-        astralPower = {r=0, g=0.5, b=1}, -- Blue-ish/Star color
-        holyPower = {r=1, g=0.9, b=0},
-        paladinMana = {r=0, g=0, b=1},
-        hunterFocus = {r=1, g=0.5, b=0.25}, -- Orange
-        warlockShards = {r=0.58, g=0.51, b=0.79}, -- Purple
-        warlockMana = {r=0, g=0, b=1}, -- Blue
-        
+        staggerLight = { r = 0, g = 1, b = 0 },
+        staggerModerate = { r = 1, g = 1, b = 0 },
+        staggerHeavy = { r = 1, g = 0, b = 0 },
+        monkEnergy = { r = 1, g = 1, b = 0 },
+        monkMana = { r = 0, g = 0.5, b = 1 },
+        chi = { r = 0.71, g = 1, b = 0.92 }, -- Light Jade/Teal
+        runicPower = { r = 0, g = 0.82, b = 1 },
+        runesReady = { r = 0.69, g = 0.38, b = 1 },
+        runesRecharging = { r = 0.4, g = 0.4, b = 0.4 },
+        fury = { r = 0.64, g = 0.19, b = 0.79 }, -- DH Purple
+        rage = { r = 1, g = 0, b = 0 },
+        energy = { r = 1, g = 1, b = 0 },
+        mana = { r = 0, g = 0, b = 1 },
+        astralPower = { r = 0, g = 0.5, b = 1 }, -- Blue-ish/Star color
+        holyPower = { r = 1, g = 0.9, b = 0 },
+        paladinMana = { r = 0, g = 0, b = 1 },
+        hunterFocus = { r = 1, g = 0.5, b = 0.25 },       -- Orange
+        warlockShards = { r = 0.58, g = 0.51, b = 0.79 }, -- Purple
+        warlockMana = { r = 0, g = 0, b = 1 },            -- Blue
+
         -- Mage
-        arcaneCharges = {r=0.1, g=0.5, b=1}, -- Cyan/Blue
-        mageMana = {r=0, g=0, b=1}, -- Blue
-        
+        arcaneCharges = { r = 0.1, g = 0.5, b = 1 }, -- Cyan/Blue
+        mageMana = { r = 0, g = 0, b = 1 },          -- Blue
+
         -- Priest
-        insanity = {r=0.4, g=0, b=0.8}, -- Dark Purple
-        priestMana = {r=0, g=0, b=1}, -- Blue
-        
+        insanity = { r = 0.4, g = 0, b = 0.8 }, -- Dark Purple
+        priestMana = { r = 0, g = 0, b = 1 },   -- Blue
+
         -- Rogue
-        energy = {r=1, g=1, b=0}, -- Yellow
-        comboPoints = {r=1, g=0.9, b=0}, -- Yellow/Gold (Classic CP)
-        
+        energy = { r = 1, g = 1, b = 0 },        -- Yellow
+        comboPoints = { r = 1, g = 0.9, b = 0 }, -- Yellow/Gold (Classic CP)
+
         -- Shaman
-        maelstrom = {r=0, g=0.5, b=1}, -- Blue
-        shamanMana = {r=0, g=0, b=1}, -- Blue
-        
+        maelstrom = { r = 0, g = 0.5, b = 1 }, -- Blue
+        shamanMana = { r = 0, g = 0, b = 1 },  -- Blue
+
         -- Evoker
-        essence = {r=0.4, g=0.8, b=0.9}, -- Cyan/Teal
-        evokerMana = {r=0, g=0.5, b=1},
+        essence = { r = 0.4, g = 0.8, b = 0.9 }, -- Cyan/Teal
+        evokerMana = { r = 0, g = 0.5, b = 1 },
     },
     runeHeightRatio = 0.2,
     druidBottomRatio = 0.2,
@@ -65,6 +65,7 @@ local defaults = {
     rogueEnergyRatio = 0.2,
     shamanManaRatio = 0.2,
     barTexture = "Interface\\TargetingFrame\\UI-StatusBar",
+    hideBlizzardResourceBar = false,
 }
 
 -- Initialize Core
@@ -84,7 +85,7 @@ function addon.Initialize()
     -- Setup Frame
     frame:SetPoint("CENTER", UIParent, "CENTER", MonkStaggerBarDB.x, MonkStaggerBarDB.y)
     frame:SetSize(MonkStaggerBarDB.width, MonkStaggerBarDB.height)
-    
+
     -- Common Background (Module can override or overlay)
     -- Actually, let's keep the backdrop generic or allow modules to skin it.
     -- For now, we replicate the original look.
@@ -96,8 +97,8 @@ function addon.Initialize()
 
     -- Enable Mouse for dragging (Config mode)
     frame:SetMovable(true)
-    frame:SetResizable(true)  -- Enable resizing
-    frame:EnableMouse(false) 
+    frame:SetResizable(true) -- Enable resizing
+    frame:EnableMouse(false)
     frame:RegisterForDrag("LeftButton")
     frame:SetScript("OnDragStart", frame.StartMoving)
     frame:SetScript("OnDragStop", function(self)
@@ -107,7 +108,7 @@ function addon.Initialize()
         MonkStaggerBarDB.y = y
         addon.UpdateLayout() -- Notify modules if needed
     end)
-    
+
     -- Resize Grip
     local resizeGrip = CreateFrame("Button", nil, frame)
     resizeGrip:SetPoint("BOTTOMRIGHT")
@@ -125,7 +126,7 @@ function addon.Initialize()
     end)
     resizeGrip:Hide()
     frame.resizeGrip = resizeGrip
-    
+
     -- Sync Size Changes
     frame:SetScript("OnSizeChanged", function(self, w, h)
         MonkStaggerBarDB.width = w
@@ -147,31 +148,34 @@ function addon.Initialize()
             _G["MSBHeight"].isUpdating = false
         end
     end)
-    
+
     -- Initialize Minimap Button
     if MonkStaggerBarDB.minimapPos == nil then
         MonkStaggerBarDB.minimapPos = 225
     end
     addon.CreateMinimapButton()
-    
+
     -- Setup flying state checker and centralized update loop
     frame:SetScript("OnUpdate", function(self, elapsed)
         -- Global checks
         if addon.CheckFlyingState then
             addon.CheckFlyingState(elapsed)
         end
-        
+
         -- Module specific update hook
         if addon.ModuleOnUpdate then
             addon.ModuleOnUpdate(elapsed)
         end
     end)
-    
+
     -- Initialize Active Module
     addon.ModuleOnUpdate = nil -- Reset before init
     if addon.InitializeModule then
         addon.InitializeModule()
     end
+
+    -- Apply Blizzard resource bar visibility
+    addon.UpdateBlizzardResourceBar()
 end
 
 -- Update Layout (Called by Config or Drag/Resize)
@@ -179,17 +183,17 @@ function addon.UpdateLayout()
     if not MonkStaggerBarDB then return end
     frame:SetPoint("CENTER", UIParent, "CENTER", MonkStaggerBarDB.x, MonkStaggerBarDB.y)
     frame:SetSize(MonkStaggerBarDB.width, MonkStaggerBarDB.height)
-    
+
     -- Update Config Sliders if open
     if _G["MSBWidth"] then
-         if not _G["MSBWidth"].isUpdating then
+        if not _G["MSBWidth"].isUpdating then
             _G["MSBWidth"]:SetValue(MonkStaggerBarDB.width)
-         end
+        end
     end
     if _G["MSBHeight"] then
-         if not _G["MSBHeight"].isUpdating then
+        if not _G["MSBHeight"].isUpdating then
             _G["MSBHeight"]:SetValue(MonkStaggerBarDB.height)
-         end
+        end
     end
 
     -- Notify Module
@@ -210,15 +214,15 @@ local lastFlyingState = false
 local flyingCheckThrottle = 0
 
 function addon.CheckFlyingState(elapsed)
-    if not MonkStaggerBarDB or not MonkStaggerBarDB.hideWhileFlying then 
+    if not MonkStaggerBarDB or not MonkStaggerBarDB.hideWhileFlying then
         if frame then frame:SetAlpha(1) end
-        return 
+        return
     end
-    
+
     flyingCheckThrottle = flyingCheckThrottle + elapsed
     if flyingCheckThrottle < 0.1 then return end
     flyingCheckThrottle = 0
-    
+
     local isFlying = IsFlying()
     if isFlying ~= lastFlyingState then
         lastFlyingState = isFlying
@@ -228,6 +232,42 @@ function addon.CheckFlyingState(elapsed)
     end
 end
 
+-- Hide/Show Blizzard Resource Bar
+local blizzardResourceFrames = {
+    "WarlockPowerFrame",
+    "PaladinPowerBarFrame",
+    "ComboPointPlayerFrame",
+    "RuneFrame",
+    "MageArcaneChargesFrame",
+    "MonkHarmonyBarFrame",
+    "TotemFrame",
+    "EssencePlayerFrame",
+    "PriestBarFrame",
+}
+
+local hookedFrames = {}
+
+function addon.UpdateBlizzardResourceBar()
+    if not MonkStaggerBarDB then return end
+    local shouldHide = MonkStaggerBarDB.hideBlizzardResourceBar
+
+    for _, frameName in ipairs(blizzardResourceFrames) do
+        local f = _G[frameName]
+        if f then
+            if shouldHide then
+                f:Hide()
+                if not hookedFrames[frameName] then
+                    f:HookScript("OnShow", function(self)
+                        if MonkStaggerBarDB and MonkStaggerBarDB.hideBlizzardResourceBar then
+                            self:Hide()
+                        end
+                    end)
+                    hookedFrames[frameName] = true
+                end
+            end
+        end
+    end
+end
 
 -- Event Handling
 local eventFrame = CreateFrame("Frame")
@@ -247,22 +287,22 @@ function addon.CreateMinimapButton()
     -- Using the unified icon now
     button:SetNormalTexture("Interface\\AddOns\\ClassResourceBar\\MonkStaggerBarIcon.png")
     button:SetHighlightTexture("Interface\\Minimap\\UI-Minimap-ZoomButton-Highlight")
-    
+
     local overlay = button:CreateTexture(nil, "OVERLAY")
     overlay:SetSize(53, 53)
     overlay:SetTexture("Interface\\Minimap\\MiniMap-TrackingBorder")
     overlay:SetPoint("TOPLEFT")
-    
+
     button:RegisterForClicks("AnyUp")
     button:RegisterForDrag("LeftButton")
-    
+
     local function UpdatePosition()
         local angle = math.rad(MonkStaggerBarDB.minimapPos or 225)
         local x = math.cos(angle) * 80
         local y = math.sin(angle) * 80
         button:SetPoint("CENTER", Minimap, "CENTER", x, y)
     end
-    
+
     button:SetScript("OnDragStart", function(self)
         self:LockHighlight()
         self:SetScript("OnUpdate", function(self)
@@ -275,18 +315,18 @@ function addon.CreateMinimapButton()
             UpdatePosition()
         end)
     end)
-    
+
     button:SetScript("OnDragStop", function(self)
         self:UnlockHighlight()
         self:SetScript("OnUpdate", nil)
     end)
-    
+
     button:SetScript("OnClick", function(self)
         if addon.OpenConfig then
             addon.OpenConfig()
         end
     end)
-    
+
     button:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_LEFT")
         GameTooltip:SetText("Monk Stagger Bar")
@@ -294,11 +334,11 @@ function addon.CreateMinimapButton()
         GameTooltip:AddLine("Drag: Move Icon", 1, 1, 1)
         GameTooltip:Show()
     end)
-    
+
     button:SetScript("OnLeave", function(self)
         GameTooltip:Hide()
     end)
-    
+
     UpdatePosition()
 end
 
