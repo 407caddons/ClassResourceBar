@@ -5,28 +5,28 @@ local _, playerClass = UnitClass("player")
 if playerClass ~= "WARRIOR" then return end
 
 local rageBar
-local RAGE_COLOR = {r = 1, g = 0, b = 0}
+local RAGE_COLOR = { r = 1, g = 0, b = 0 }
 
 function addon.InitializeModule()
     local frame = addon.Frame
-    
+
     -- Setup Rage Bar
     rageBar = CreateFrame("StatusBar", nil, frame)
     rageBar:SetAllPoints(frame)
     local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
     rageBar:SetStatusBarTexture(texture)
-    
+
     local c = MonkStaggerBarDB.colors.rage or RAGE_COLOR
     rageBar:SetStatusBarColor(c.r, c.g, c.b)
-    
+
     rageBar:SetMinMaxValues(0, UnitPowerMax("player", Enum.PowerType.Rage))
     rageBar:SetValue(UnitPower("player", Enum.PowerType.Rage))
-    
+
     -- Background
     local bg = rageBar:CreateTexture(nil, "BACKGROUND")
     bg:SetAllPoints(true)
     bg:SetColorTexture(0, 0, 0, 0.5)
-    
+
     -- Rage Text
     rageBar.text = rageBar:CreateFontString(nil, "OVERLAY", "GameFontHighlight")
     rageBar.text:SetPoint("CENTER")
@@ -40,9 +40,9 @@ function addon.InitializeModule()
     local eventFrame = CreateFrame("Frame")
     eventFrame:RegisterEvent("UNIT_POWER_UPDATE")
     eventFrame:RegisterEvent("UNIT_MAXPOWER")
-    eventFrame:RegisterEvent("PLAYER_LOGIN") 
+    eventFrame:RegisterEvent("PLAYER_LOGIN")
     eventFrame:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
-    
+
     eventFrame:SetScript("OnEvent", function(self, event, arg1, arg2)
         if event == "UNIT_POWER_UPDATE" and arg1 == "player" then
             if arg2 == "RAGE" then
@@ -54,30 +54,29 @@ function addon.InitializeModule()
             addon.UpdateRage()
         end
     end)
-    
+
     addon.UpdateRage()
 end
 
-
 function addon.UpdateRage()
     if not rageBar then return end
-    
+
     rageBar:Show()
-    
+
     local power = UnitPower("player", Enum.PowerType.Rage)
     local maxPower = UnitPowerMax("player", Enum.PowerType.Rage)
-    
+
     rageBar:SetMinMaxValues(0, maxPower)
     rageBar:SetValue(power)
     rageBar.text:SetText(power)
-    
+
     local c = MonkStaggerBarDB.colors.rage or RAGE_COLOR
     rageBar:SetStatusBarColor(c.r, c.g, c.b)
 end
 
 -- Layout Update
 function addon.OnLayoutUpdate()
-   -- Nothing special for now as it fills the frame.
+    -- Nothing special for now as it fills the frame.
 end
 
 function addon.OnTextureUpdate()

@@ -52,6 +52,7 @@ local defaults = {
         -- Evoker
         essence = { r = 0.4, g = 0.8, b = 0.9 }, -- Cyan/Teal
         evokerMana = { r = 0, g = 0.5, b = 1 },
+
     },
     runeHeightRatio = 0.2,
     druidBottomRatio = 0.2,

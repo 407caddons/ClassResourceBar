@@ -5,7 +5,10 @@
       "mcp__acp__Edit",
       "WebFetch(domain:www.wowinterface.com)",
       "WebFetch(domain:www.mmo-champion.com)",
-      "WebFetch(domain:github.com)"
+      "WebFetch(domain:github.com)",
+      "mcp__acp__Bash",
+      "WebFetch(domain:warcraft.wiki.gg)",
+      "WebFetch(domain:wago.io)"
     ]
   }
 }
