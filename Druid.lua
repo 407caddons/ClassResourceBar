@@ -231,6 +231,10 @@ function addon.UpdateDruidLayout()
     end
 end
 
+function addon.OnLayoutUpdate()
+    addon.UpdateDruidLayout()
+end
+
 function addon.OnTextureUpdate()
     local texture = MonkStaggerBarDB.barTexture or "Interface\\TargetingFrame\\UI-StatusBar"
     if rageBar then rageBar:SetStatusBarTexture(texture) end

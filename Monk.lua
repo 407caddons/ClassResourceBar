@@ -154,10 +154,14 @@ function addon.UpdateStagger()
         addon.lastMaxHealth = maxHealth
     end
         
-    local percent = (addon.lastStagger / addon.lastMaxHealth) * 100
-    staggerBar:SetMinMaxValues(0, maxHealth)
-    staggerBar:SetValue(stagger)
-    staggerBar.text:SetText(string.format("%d (%.1f%%)", stagger, percent))
+    -- Rendering APIs cannot safely consume secret values. Use the last
+    -- non-secret samples when WoW temporarily marks Stagger or health secret.
+    local safeStagger = addon.lastStagger
+    local safeMaxHealth = addon.lastMaxHealth
+    local percent = (safeStagger / safeMaxHealth) * 100
+    staggerBar:SetMinMaxValues(0, safeMaxHealth)
+    staggerBar:SetValue(safeStagger)
+    staggerBar.text:SetText(string.format("%d (%.1f%%)", safeStagger, percent))
     
     -- Stagger Colors
     local colors = MonkStaggerBarDB.colors
@@ -300,6 +304,10 @@ function addon.UpdateMonkLayout()
         manaBar:SetSize(w, h)
         manaBar:SetPoint("BOTTOMLEFT", frame, "BOTTOMLEFT")
     end
+end
+
+function addon.OnLayoutUpdate()
+    addon.UpdateMonkLayout()
 end
 
 function addon.OnTextureUpdate()

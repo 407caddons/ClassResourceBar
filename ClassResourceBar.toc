@@ -1,4 +1,4 @@
-## Interface: 120000, 120001, 120005, 120007
+## Interface: 120100
 ## Title: |cff00ff96Class Resource Bar|r
 ## Notes: Resource bar for all classes
 ## Author: 407c

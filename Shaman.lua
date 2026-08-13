@@ -13,7 +13,6 @@ local MANA_COLOR = {r = 0, g = 0, b = 1}
 
 -- Spec IDs
 local SPEC_ELEMENTAL = 262
-local SPEC_ENHANCEMENT = 263
 local SPEC_RESTORATION = 264
 
 function addon.InitializeModule()
@@ -110,11 +109,8 @@ function addon.OnLayoutUpdate()
     local specID = spec and GetSpecializationInfo(spec)
     
     local isElemental = (specID == SPEC_ELEMENTAL)
-    local isEnhancement = (specID == SPEC_ENHANCEMENT)
-    -- Enhancement technically uses Maelstrom too, but often tracks Maelstrom Weapon Stacks (Aura).
-    -- Standard Resource Bar tracks Maelstrom (Power) for both.
-    
-    local showMaelstrom = (isElemental or isEnhancement)
+    -- Enhancement uses Maelstrom Weapon aura stacks, not Maelstrom power.
+    local showMaelstrom = isElemental
     
     local gap = 2
     local availableHeight = h - gap

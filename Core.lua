@@ -12,6 +12,7 @@ local defaults = {
     height = 20,
     minimapPos = 225,
     hideWhileFlying = false,
+    limitUpdates = true,
     colors = {
         staggerLight = { r = 0, g = 1, b = 0 },
         staggerModerate = { r = 1, g = 1, b = 0 },
@@ -81,6 +82,21 @@ function addon.Initialize()
                 MonkStaggerBarDB[k] = v
             end
         end
+    end
+
+    -- Migrate the original Monk config keys to the names used by the bar.
+    local colors = MonkStaggerBarDB.colors
+    if colors.light then
+        colors.staggerLight = colors.light
+        colors.light = nil
+    end
+    if colors.moderate then
+        colors.staggerModerate = colors.moderate
+        colors.moderate = nil
+    end
+    if colors.heavy then
+        colors.staggerHeavy = colors.heavy
+        colors.heavy = nil
     end
 
     -- Setup Frame
@@ -157,6 +173,8 @@ function addon.Initialize()
     addon.CreateMinimapButton()
 
     -- Setup flying state checker and centralized update loop
+    local moduleUpdateElapsed = 0
+    local moduleUpdateInterval = 1 / 30
     frame:SetScript("OnUpdate", function(self, elapsed)
         -- Global checks
         if addon.CheckFlyingState then
@@ -165,7 +183,17 @@ function addon.Initialize()
 
         -- Module specific update hook
         if addon.ModuleOnUpdate then
-            addon.ModuleOnUpdate(elapsed)
+            if MonkStaggerBarDB.limitUpdates then
+                moduleUpdateElapsed = moduleUpdateElapsed + elapsed
+                if moduleUpdateElapsed >= moduleUpdateInterval then
+                    local updateElapsed = moduleUpdateElapsed
+                    moduleUpdateElapsed = moduleUpdateElapsed % moduleUpdateInterval
+                    addon.ModuleOnUpdate(updateElapsed)
+                end
+            else
+                moduleUpdateElapsed = 0
+                addon.ModuleOnUpdate(elapsed)
+            end
         end
     end)
 
@@ -214,18 +242,20 @@ end
 local lastFlyingState = false
 local flyingCheckThrottle = 0
 
-function addon.CheckFlyingState(elapsed)
+function addon.CheckFlyingState(elapsed, force)
     if not MonkStaggerBarDB or not MonkStaggerBarDB.hideWhileFlying then
+        lastFlyingState = false
+        flyingCheckThrottle = 0
         if frame then frame:SetAlpha(1) end
         return
     end
 
-    flyingCheckThrottle = flyingCheckThrottle + elapsed
-    if flyingCheckThrottle < 0.1 then return end
+    flyingCheckThrottle = flyingCheckThrottle + (elapsed or 0)
+    if not force and flyingCheckThrottle < 0.1 then return end
     flyingCheckThrottle = 0
 
     local isFlying = IsFlying()
-    if isFlying ~= lastFlyingState then
+    if force or isFlying ~= lastFlyingState then
         lastFlyingState = isFlying
         if frame then
             frame:SetAlpha(isFlying and 0 or 1)

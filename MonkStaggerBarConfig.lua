@@ -268,7 +268,7 @@ function addon.OpenConfig()
             function(checked)
                 MonkStaggerBarDB.hideWhileFlying = checked
                 if addon.CheckFlyingState then
-                    addon.CheckFlyingState(0.2) -- Force check
+                    addon.CheckFlyingState(0, true)
                 end
             end, -250)
 
@@ -286,6 +286,12 @@ function addon.OpenConfig()
                 end
             end, -280)
 
+        CreateCheckbox(page, "MSBLimitUpdates", "Limit Updates to 30/Second",
+            function() return MonkStaggerBarDB.limitUpdates end,
+            function(checked)
+                MonkStaggerBarDB.limitUpdates = checked
+            end, -310)
+
         local textureItems = {
             { text = "Default", value = "Interface\\TargetingFrame\\UI-StatusBar" },
             { text = "Smooth",  value = "Interface\\AddOns\\ClassResourceBar\\MonkStaggerBarIcon.png" }, -- Placeholder for smooth if no specific path, but let's find better ones
@@ -302,7 +308,7 @@ function addon.OpenConfig()
             function(v)
                 MonkStaggerBarDB.barTexture = v
                 if addon.UpdateTextures then addon.UpdateTextures() end
-            end, -330)
+            end, -370)
 
         return page
     end
@@ -315,31 +321,31 @@ function addon.OpenConfig()
         -- Stagger Colors
         CreateColorPicker(page, "MSBColorStaggerLight", "Stagger Light",
             function()
-                local c = MonkStaggerBarDB.colors.light or { r = 0, g = 1, b = 0 }
+                local c = MonkStaggerBarDB.colors.staggerLight or { r = 0, g = 1, b = 0 }
                 return c.r, c.g, c.b
             end,
             function(r, g, b)
-                MonkStaggerBarDB.colors.light = { r = r, g = g, b = b }
+                MonkStaggerBarDB.colors.staggerLight = { r = r, g = g, b = b }
                 if addon.UpdateStagger then addon.UpdateStagger() end
             end, -20)
 
         CreateColorPicker(page, "MSBColorStaggerModerate", "Stagger Moderate",
             function()
-                local c = MonkStaggerBarDB.colors.moderate or { r = 1, g = 1, b = 0 }
+                local c = MonkStaggerBarDB.colors.staggerModerate or { r = 1, g = 1, b = 0 }
                 return c.r, c.g, c.b
             end,
             function(r, g, b)
-                MonkStaggerBarDB.colors.moderate = { r = r, g = g, b = b }
+                MonkStaggerBarDB.colors.staggerModerate = { r = r, g = g, b = b }
                 if addon.UpdateStagger then addon.UpdateStagger() end
             end, -50)
 
         CreateColorPicker(page, "MSBColorStaggerHeavy", "Stagger Heavy",
             function()
-                local c = MonkStaggerBarDB.colors.heavy or { r = 1, g = 0, b = 0 }
+                local c = MonkStaggerBarDB.colors.staggerHeavy or { r = 1, g = 0, b = 0 }
                 return c.r, c.g, c.b
             end,
             function(r, g, b)
-                MonkStaggerBarDB.colors.heavy = { r = r, g = g, b = b }
+                MonkStaggerBarDB.colors.staggerHeavy = { r = r, g = g, b = b }
                 if addon.UpdateStagger then addon.UpdateStagger() end
             end, -80)
 
